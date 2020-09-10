@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "410283813352",
+    "firebase_url": "https://trailblazers-connect.firebaseio.com",
+    "project_id": "trailblazers-connect",
+    "storage_bucket": "trailblazers-connect.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:410283813352:android:f3512fdf084da17a041c5d",
+        "android_client_info": {
+          "package_name": "uk.co.fremingtontrailblazers.trailblazersconnect"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "410283813352-td7ag77ia756uppa8hksm5dfgofbpu3a.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA1Ti3IgFcirMbVEyonfzKjr4aJ8aVD6ZY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "410283813352-td7ag77ia756uppa8hksm5dfgofbpu3a.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
