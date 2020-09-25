@@ -5,8 +5,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -40,6 +40,15 @@ public class Login extends AppCompatActivity {
         mLoginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                mLoginBtn.setBackgroundResource(R.drawable.login_button_pressed);
+
+                Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        mLoginBtn.setBackgroundResource(R.drawable.login_button);
+                    }
+                }, 100);
                 String email = mEmail.getText().toString().trim();          //gets the email and password from the text input boxes and converts them to strings
                 String password = mPassword.getText().toString().trim();
 
@@ -70,6 +79,14 @@ public class Login extends AppCompatActivity {
         mCreateAccountText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                mCreateAccountText.setTextColor(getResources().getColor(R.color.TbDarkOrange));
+                Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        mCreateAccountText.setTextColor(getResources().getColor(R.color.TrailBlazersOrange));
+                    }
+                }, 100);
                 startActivity(new Intent(getApplicationContext(),Register.class));
             }
         });

@@ -1,10 +1,15 @@
 package uk.co.fremingtontrailblazers.trailblazersconnect;
 
+import androidx.annotation.ColorInt;
+import androidx.annotation.ColorRes;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
@@ -45,6 +50,15 @@ public class Register extends AppCompatActivity {
         mRegisterBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                mRegisterBtn.setBackgroundResource(R.drawable.register_button_pressed);
+                Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        mRegisterBtn.setBackgroundResource(R.drawable.register_button);
+                    }
+                }, 100);
+
                 String email = mEmail.getText().toString().trim();          //gets the email and password from the text input boxes and converts them to strings
                 String password = mPassword.getText().toString().trim();
 
@@ -81,6 +95,14 @@ public class Register extends AppCompatActivity {
         mLoginHereText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                mLoginHereText.setTextColor(getResources().getColor(R.color.TbDarkOrange));
+                Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        mLoginHereText.setTextColor(getResources().getColor(R.color.TrailBlazersOrange));
+                    }
+                }, 100);
                 startActivity(new Intent(getApplicationContext(),Login.class));
             }
         });
