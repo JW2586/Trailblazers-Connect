@@ -16,4 +16,27 @@
         android:background="@drawable/logout_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <com.prolificinteractive.materialcalendarview.MaterialCalendarView
+        android:id="@+id/calendarView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/logoutButton"
+        app:mcv_arrowColor="@color/TrailBlazersOrange"
+        app:mcv_calendarMode="month"
+        app:mcv_dateTextAppearance="@style/TextAppearance.AppCompat.Body1"
+        app:mcv_firstDayOfWeek="monday"
+        app:mcv_headerTextAppearance="@style/TextAppearance.AppCompat.Body1"
+        app:mcv_monthLabels="@string/calendar"
+        app:mcv_selectionColor="@color/colorAccent"
+        app:mcv_showOtherDates="other_months"
+        app:mcv_weekDayLabels="@string/calendar"
+        app:mcv_weekDayTextAppearance="@style/TextAppearance.AppCompat.Body1" />
 </androidx.constraintlayout.widget.ConstraintLayout>

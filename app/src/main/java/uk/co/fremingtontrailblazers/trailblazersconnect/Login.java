@@ -40,7 +40,7 @@ public class Login extends AppCompatActivity {
         mLoginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mLoginBtn.setBackgroundResource(R.drawable.login_button_pressed);
+                mLoginBtn.setBackgroundResource(R.drawable.login_button_pressed);       //changes the look of the login button when it is pressed
 
                 Handler handler = new Handler();
                 handler.postDelayed(new Runnable() {
@@ -66,10 +66,10 @@ public class Login extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if(task.isSuccessful()){
-                            Toast.makeText(Login.this, "Login successful", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(Login.this, "Login successful", Toast.LENGTH_SHORT).show();      //displays a message when the user successfully logs in
                             startActivity(new Intent(getApplicationContext(),MainActivity.class));
                         }else{
-                            Toast.makeText(Login.this, "An error has occurred, " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(Login.this, "An error has occurred, " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();    //displays an error message if the login fails
                         }
                     }
                 });
@@ -79,7 +79,7 @@ public class Login extends AppCompatActivity {
         mCreateAccountText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mCreateAccountText.setTextColor(getResources().getColor(R.color.TbDarkOrange));
+                mCreateAccountText.setTextColor(getResources().getColor(R.color.TbDarkOrange));     //changes the look of the "create account" text when it is pressed
                 Handler handler = new Handler();
                 handler.postDelayed(new Runnable() {
                     @Override

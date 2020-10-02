@@ -50,7 +50,7 @@ public class Register extends AppCompatActivity {
         mRegisterBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mRegisterBtn.setBackgroundResource(R.drawable.register_button_pressed);
+                mRegisterBtn.setBackgroundResource(R.drawable.register_button_pressed);     //changes the look of the register button when it is pressed
                 Handler handler = new Handler();
                 handler.postDelayed(new Runnable() {
                     @Override
@@ -72,7 +72,7 @@ public class Register extends AppCompatActivity {
                     return;
                 }
 
-                if(password.length() < 8){                                  //this makes sure that the user enters a password that is 8 characters or more
+                if(password.length() < 8){                                  //this makes sure that the user enters a password that is 8 characters or more, for security purposes
                     mPassword.setError("Your password must be at least 8 characters");
                     return;
                 }

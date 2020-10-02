@@ -23,7 +23,7 @@ public class MainActivity extends AppCompatActivity {
         mLogoutBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mLogoutBtn.setBackgroundResource(R.drawable.logout_button_pressed);
+                mLogoutBtn.setBackgroundResource(R.drawable.logout_button_pressed);     //changes the look of the logout button when it is pressed
 
                 Handler handler = new Handler();
                 handler.postDelayed(new Runnable() {
@@ -32,8 +32,8 @@ public class MainActivity extends AppCompatActivity {
                         mLogoutBtn.setBackgroundResource(R.drawable.logout_button);
                     }
                 }, 100);
-                FirebaseAuth.getInstance().signOut();
-                startActivity(new Intent(getApplicationContext(), Login.class));
+                FirebaseAuth.getInstance().signOut();                                   //signs the user out of the app
+                startActivity(new Intent(getApplicationContext(), Login.class));        //takes the user back to the login page
             }
         });
     }
