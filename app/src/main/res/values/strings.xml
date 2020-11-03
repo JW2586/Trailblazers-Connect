@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Trailblazers Connect</string>
+    <string name="write_note">writeNote</string>
+    <string name="save">save</string>
 </resources>
