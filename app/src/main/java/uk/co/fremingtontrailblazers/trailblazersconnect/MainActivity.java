@@ -15,16 +15,21 @@ import android.widget.ImageView;
 
 import com.applandeo.materialcalendarview.CalendarView;
 import com.applandeo.materialcalendarview.EventDay;
+import com.applandeo.materialcalendarview.exceptions.OutOfDateRangeException;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -35,70 +40,124 @@ public class MainActivity extends AppCompatActivity {
 
     private CollectionReference mColRef = FirebaseFirestore.getInstance().collection("events");     //sets the cloud firestore collection to be the "events" collection
     private void displayEvents() {
-//        LayerDrawable layerDrawable = (LayerDrawable) getResources().getDrawable(R.drawable.multiple_dots);
-//        Drawable replace = (Drawable) getResources().getDrawable(R.drawable.dot_red);
-//        layerDrawable.setDrawableByLayerId(R.id.dot1, replace);
-//        List<EventDay> events = new ArrayList<>();
+//========WORKING CLONING CALENDAR FOR MULTIPLE ICONS ON DIFFERENT DAYS===============================================================================================================================================================================================
 //        Calendar calendar = Calendar.getInstance();
-//        events.add(new EventDay(calendar, R.drawable.multiple_dots));
-//        CalendarView calendarView = (CalendarView) findViewById(R.id.eventCalendar);
+//        List<EventDay> events = new ArrayList<>();          //Creates a list of EventDay objects
+//
+//        calendar = (Calendar) calendar.clone();
+//        calendar.set(2020, 11, 10);    //Tells the calendar which day to display the dots on, comes from the date extracted from the document
+//        events.add(new EventDay(calendar, R.drawable.dot_red));  //Adds the EventDay and the dots to the events list
+//        CalendarView calendarView = (CalendarView) findViewById(R.id.eventCalendar); //Tells the library which calendar to add the dots to
+//        try {
+//            calendarView.setDate(calendar);
+//        } catch (OutOfDateRangeException e) {
+//            e.printStackTrace();
+//        }
+//        calendarView.setEvents(events);  //Displays the dots on the calendar
+//
+//        calendar = (Calendar) calendar.clone();
+//        calendar.set(2020, 11, 11);    //Tells the calendar which day to display the dots on, comes from the date extracted from the document
+//        events.add(new EventDay(calendar, R.drawable.dot_blue));  //Adds the EventDay and the dots to the events list
+//
+//        try {
+//            calendarView.setDate(calendar);
+//        } catch (OutOfDateRangeException e) {
+//            e.printStackTrace();
+//        }
 //        calendarView.setEvents(events);
+//===================================================================================================================================================================================================================================================================
+
+//DOCUMENT ITERATION=====================================================================================================================================================================
         mColRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+
+            Calendar calendar = Calendar.getInstance();
+            List<EventDay> events = new ArrayList<>();          //Creates a list of EventDay objects
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()) {
-                    for (QueryDocumentSnapshot document : task.getResult()) {
+                    for (QueryDocumentSnapshot document : task.getResult()) {               //Iterates through each document in cloud firestore
                         //Log.d("document:", document.getId() + " => " + document.get("Groups"));
 
-                        List<Object> groupsList = new ArrayList<>();
-                        groupsList = (List<Object>) document.get("Groups");
-                        LayerDrawable layerDrawable = (LayerDrawable) getResources().getDrawable(R.drawable.multiple_dots);
-                        //layerDrawable.mutate();
+                        List<Object> groupsList = new ArrayList<>();         //Creates a list object called groupsList
+                        groupsList = (List<Object>) document.get("Groups");  //Retrieves the groups from the document and adds them to groupsList
 
+                        Date eventDate = document.getDate("Date");     //Retrieves the date from the document and sets it as a Date variable called eventDate
+                        Log.d("THE TIMESTAMP IS:", eventDate.toString());
+                        LocalDate localDate = eventDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+                        int month = localDate.getMonthValue();     //Extracts the month from the eventDate and sets it as an integer called month
+                        int year = localDate.getYear();            //Extracts the year from the eventDate and sets it as an integer called year
+                        int dayOfMonth = localDate.getDayOfMonth();//Extracts the day from the eventDate and sets it as an integer called dayOfMonth
+                        Log.d("THE DATE IS:", eventDate.toString());
+                        Log.d("THE DAY IS:", String.valueOf(dayOfMonth));
+                        Log.d("THE MONTH IS:", String.valueOf(month));
+
+                        Log.d("THE YEAR IS:", String.valueOf(year));
+                        LayerDrawable layerDrawable = (LayerDrawable) getResources().getDrawable(R.drawable.multiple_dots); //Loads in the empty dots
+                        LayerDrawable dotInstanceDrawable;
+                        dotInstanceDrawable = (LayerDrawable) layerDrawable.getConstantState().newDrawable().mutate();
 //                        Log.d("groups of:", document.getId() + " => " + groupsList.toString());
 //                        Log.d("size:", String.valueOf(groupsList.size()));
                         Log.d("document:", document.getId() + " => " + document.get("Groups"));
-                        for (int i=0; i<groupsList.size(); i++){
+
+                        for (int i = 0; i < groupsList.size(); i++) {        //Iterates through the groupsList for each document
 //                            Log.d("group", groupsList.get(i).toString());
-                            if (groupsList.get(i).toString().equals("Red")) {
+                            if (groupsList.get(i).toString().equals("Red")) {           //Checks the colours found in the groupsList
                                 Log.d("message", "there is a red in here");
-                                Drawable replaceRed = (Drawable) getResources().getDrawable(R.drawable.dot_red);
-                                layerDrawable.setDrawableByLayerId(R.id.dot1, replaceRed);
+                                Drawable replaceDot = (Drawable) getResources().getDrawable(R.drawable.dot_red);    //If a colour is in the groupsList, it replaces one of the blank dots with that colour
+                                dotInstanceDrawable.setDrawableByLayerId(R.id.dot1, replaceDot);
                             }
                             if (groupsList.get(i).toString().equals("Orange")) {
                                 Log.d("message", "there is a orange in here");
+                                Drawable replaceDot = (Drawable) getResources().getDrawable(R.drawable.dot_orange);    //If a colour is in the groupsList, it replaces one of the blank dots with that colour
+                                dotInstanceDrawable.setDrawableByLayerId(R.id.dot2, replaceDot);
                             }
                             if (groupsList.get(i).toString().equals("Yellow")) {
                                 Log.d("message", "there is a yellow in here");
+                                Drawable replaceDot = (Drawable) getResources().getDrawable(R.drawable.dot_yellow);    //If a colour is in the groupsList, it replaces one of the blank dots with that colour
+                                dotInstanceDrawable.setDrawableByLayerId(R.id.dot3, replaceDot);
                             }
                             if (groupsList.get(i).toString().equals("Green")) {
                                 Log.d("message", "there is a green in here");
+                                Drawable replaceDot = (Drawable) getResources().getDrawable(R.drawable.dot_green);    //If a colour is in the groupsList, it replaces one of the blank dots with that colour
+                                dotInstanceDrawable.setDrawableByLayerId(R.id.dot4, replaceDot);
                             }
                             if (groupsList.get(i).toString().equals("Blue")) {
                                 Log.d("message", "there is a blue in here");
+                                Drawable replaceDot = (Drawable) getResources().getDrawable(R.drawable.dot_blue);    //If a colour is in the groupsList, it replaces one of the blank dots with that colour
+                                dotInstanceDrawable.setDrawableByLayerId(R.id.dot5, replaceDot);
                             }
                             if (groupsList.get(i).toString().equals("Indigo")) {
                                 Log.d("message", "there is a indigo in here");
+                                Drawable replaceDot = (Drawable) getResources().getDrawable(R.drawable.dot_indigo);    //If a colour is in the groupsList, it replaces one of the blank dots with that colour
+                                dotInstanceDrawable.setDrawableByLayerId(R.id.dot6, replaceDot);
                             }
                             if (groupsList.get(i).toString().equals("Violet")) {
                                 Log.d("message", "there is a violet in here");
+                                Drawable replaceDot = (Drawable) getResources().getDrawable(R.drawable.dot_violet);    //If a colour is in the groupsList, it replaces one of the blank dots with that colour
+                                dotInstanceDrawable.setDrawableByLayerId(R.id.dot7, replaceDot);
                             }
 
 
                         }
-                        List<EventDay> events = new ArrayList<>();
-                        Log.d("Events before", events.toString());
-                        Calendar calendar = Calendar.getInstance();
-                        events.add(new EventDay(calendar, R.drawable.multiple_dots));
-                        Log.d("Events after", events.toString());
-                        CalendarView calendarView = (CalendarView) findViewById(R.id.eventCalendar);
-                        calendarView.setEvents(events);
+
+
+                        calendar = (Calendar) calendar.clone();
+                        calendar.set(year, month - 1, dayOfMonth);    //Tells the calendar which day to display the dots on, comes from the date extracted from the document
+                        events.add(new EventDay(calendar, dotInstanceDrawable));  //Adds the EventDay and the dots to the events list
+                        CalendarView calendarView = (CalendarView) findViewById(R.id.eventCalendar); //Tells the library which calendar to add the dots to
+                        try {
+                            calendarView.setDate(calendar);
+                        } catch (OutOfDateRangeException e) {
+                            e.printStackTrace();
+                        }
+                        calendarView.setEvents(events);  //Displays the dots on the calendar
                     }
                 } else {
                     Log.d("error", "Error getting documents: ", task.getException());
                 }
             }
         });
+//==========================================================================================================================================================================================================================================
     }
 
     @Override
@@ -111,16 +170,16 @@ public class MainActivity extends AppCompatActivity {
 //        mCalendarView = findViewById(R.id.eventCalendar);
         mDisplayEventsButton = findViewById(R.id.displayEventsButton);
 
-        LayerDrawable layerDrawable = (LayerDrawable) getResources().getDrawable(R.drawable.multiple_dots);
-        Drawable replacegreen = (Drawable) getResources().getDrawable(R.drawable.dot_green);
-        layerDrawable.setDrawableByLayerId(R.id.dot4, replacegreen);
-        Drawable replace = (Drawable) getResources().getDrawable(R.drawable.dot_orange);
-        layerDrawable.setDrawableByLayerId(R.id.dot2, replace);
-        List<EventDay> events = new ArrayList<>();
-        Calendar calendar = Calendar.getInstance();
-        events.add(new EventDay(calendar, R.drawable.multiple_dots));
-        CalendarView calendarView = (CalendarView) findViewById(R.id.eventCalendar);
-        calendarView.setEvents(events);
+//        LayerDrawable layerDrawable = (LayerDrawable) getResources().getDrawable(R.drawable.multiple_dots);
+//        Drawable replaceGreen = (Drawable) getResources().getDrawable(R.drawable.dot_green);
+//        layerDrawable.setDrawableByLayerId(R.id.dot4, replaceGreen);
+//        Drawable replaceOrange = (Drawable) getResources().getDrawable(R.drawable.dot_orange);
+//        layerDrawable.setDrawableByLayerId(R.id.dot2, replaceOrange);
+//        List<EventDay> events = new ArrayList<>();
+//        Calendar calendar = Calendar.getInstance();
+//        events.add(new EventDay(calendar, R.drawable.multiple_dots));
+//        CalendarView calendarView = (CalendarView) findViewById(R.id.eventCalendar);
+//        calendarView.setEvents(events);
 
         mDisplayEventsButton.setOnClickListener(new View.OnClickListener() {
             @Override
