@@ -7,56 +7,31 @@
     android:id="@+id/createEventLayout"
     tools:context=".createEventActivity">
 
-    <EditText
-        android:id="@+id/eventTitle"
-        android:layout_width="381dp"
-        android:layout_height="25dp"
-        android:layout_marginTop="16dp"
-        android:background="@drawable/edit_text_border"
-        android:gravity="top"
-        android:hint=" Event title"
-        android:inputType="text"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <EditText
-        android:id="@+id/eventText"
-        android:layout_width="381dp"
-        android:layout_height="159dp"
-        android:layout_marginTop="16dp"
-        android:background="@drawable/edit_text_border"
-        android:gravity="top"
-        android:hint=" Write event details here"
-        android:inputType="text"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/eventTitle" />
-
-    <EditText
-        android:id="@+id/eventLocation"
-        android:layout_width="381dp"
-        android:layout_height="25dp"
-        android:layout_marginTop="16dp"
-        android:background="@drawable/edit_text_border"
-        android:gravity="top"
-        android:hint=" Event location"
-        android:inputType="text"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.533"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/eventText" />
 
     <Button
         android:id="@+id/saveEventButton"
         android:layout_width="209dp"
         android:layout_height="69dp"
+        android:layout_marginTop="16dp"
         android:layout_marginBottom="16dp"
         android:background="@drawable/save_event_button"
         android:textColor="@android:color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/checkBoxViolet" />
+
+    <EditText
+        android:id="@+id/eventText"
+        android:layout_width="381dp"
+        android:layout_height="159dp"
+        android:background="@null"
+        android:gravity="top"
+        android:hint="Write event details here"
+        android:inputType="text"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/instructionsText" />
 
     <TextView
         android:id="@+id/instructionsText"
@@ -68,53 +43,9 @@
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
         android:text="Click on the date that you want to add an event"
-        android:visibility="invisible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-
-    <Button
-        android:id="@+id/selectTimeButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="Select Time"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/displayDate" />
-
-    <TextView
-        android:id="@+id/displayTime"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="Time"
-        android:textSize="24sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/selectTimeButton" />
-
-    <Button
-        android:id="@+id/selectDateButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="Select Date"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/eventLocation" />
-
-    <TextView
-        android:id="@+id/displayDate"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="Date"
-        android:textSize="24sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/selectDateButton" />
 
     <CheckBox
         android:id="@+id/checkBoxRed"
@@ -122,11 +53,10 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginLeft="16dp"
-        android:layout_marginTop="32dp"
         android:text="Red"
         app:buttonTint="@color/Red"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/displayTime" />
+        tools:layout_editor_absoluteY="538dp" />
 
     <CheckBox
         android:id="@+id/checkBoxOrange"
@@ -134,23 +64,21 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginLeft="16dp"
-        android:layout_marginTop="32dp"
         android:text="Orange"
         app:buttonTint="@color/Orange"
         app:layout_constraintStart_toEndOf="@+id/checkBoxRed"
-        app:layout_constraintTop_toBottomOf="@+id/displayTime" />
+        tools:layout_editor_absoluteY="538dp" />
 
     <CheckBox
         android:id="@+id/checkBoxYellow"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="12dp"
-        android:layout_marginLeft="12dp"
-        android:layout_marginTop="32dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
         android:text="Yellow"
         app:buttonTint="@color/Yellow"
         app:layout_constraintStart_toEndOf="@+id/checkBoxOrange"
-        app:layout_constraintTop_toBottomOf="@+id/displayTime" />
+        tools:layout_editor_absoluteY="538dp" />
 
     <CheckBox
         android:id="@+id/checkBoxGreen"
@@ -158,11 +86,10 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginLeft="16dp"
-        android:layout_marginTop="32dp"
         android:text="Green"
         app:buttonTint="@color/Green"
         app:layout_constraintStart_toEndOf="@+id/checkBoxYellow"
-        app:layout_constraintTop_toBottomOf="@+id/displayTime" />
+        tools:layout_editor_absoluteY="538dp" />
 
     <CheckBox
         android:id="@+id/checkBoxBlue"
@@ -199,8 +126,6 @@
         app:buttonTint="@color/Violet"
         app:layout_constraintStart_toEndOf="@+id/checkBoxIndigo"
         app:layout_constraintTop_toBottomOf="@+id/checkBoxYellow" />
-
-
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
