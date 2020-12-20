@@ -20,13 +20,19 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import com.applandeo.materialcalendarview.CalendarView;
+import com.applandeo.materialcalendarview.EventDay;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firestore.v1.Document;
 
 
@@ -53,11 +59,11 @@ public class createEventActivity extends AppCompatActivity implements DatePicker
     private int eventDateDay = 0;
     private int eventHour = 0;
     private int eventMinute = 0;
+    public boolean eventCanBeMade = false;
     Button mSaveEventButton;                                //creates variables for each UI element
     EditText mEventDetailsView;
     EditText mEventTitleView;
     EditText mEventLocationView;
-    CalendarView mDatePicker;
     CheckBox mCheckBoxRed;
     CheckBox mCheckBoxOrange;
     CheckBox mCheckBoxYellow;
@@ -83,7 +89,6 @@ public class createEventActivity extends AppCompatActivity implements DatePicker
         mCheckBoxBlue = findViewById(R.id.checkBoxBlue);
         mCheckBoxIndigo = findViewById(R.id.checkBoxIndigo);
         mCheckBoxViolet = findViewById(R.id.checkBoxViolet);
-        mDatePicker = findViewById(R.id.eventCalendar);
         mEventDetailsView = findViewById(R.id.eventText);
         mEventTitleView = findViewById(R.id.eventTitle);
         mEventLocationView = findViewById(R.id.eventLocation);
@@ -95,6 +100,14 @@ public class createEventActivity extends AppCompatActivity implements DatePicker
         mSelectDateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                mSelectDateButton.setBackgroundResource(R.drawable.select_date_button_pressed);
+                Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        mSelectDateButton.setBackgroundResource(R.drawable.select_date_button);
+                    }
+                }, 100);
                 DialogFragment datePicker = new DatePickerFragment();
                 datePicker.show(getSupportFragmentManager(), "date picker");
 
@@ -104,6 +117,14 @@ public class createEventActivity extends AppCompatActivity implements DatePicker
         mSelectTimeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                mSelectTimeButton.setBackgroundResource(R.drawable.select_time_button_pressed);
+                Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        mSelectTimeButton.setBackgroundResource(R.drawable.select_time_button);
+                    }
+                }, 100);
                 DialogFragment timePicker = new TimePickerFragment();
                 timePicker.show(getSupportFragmentManager(), "time picker");
             }
@@ -128,7 +149,7 @@ public class createEventActivity extends AppCompatActivity implements DatePicker
     }
 
     @Override
-    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {                    //Gets the date from the calendar pop up box
         this.eventDateYear = year;
         this.eventDateMonth = month;
         this.eventDateDay = dayOfMonth;
@@ -139,10 +160,13 @@ public class createEventActivity extends AppCompatActivity implements DatePicker
         String currentDateString = DateFormat.getDateInstance().format(datePickerCalendar.getTime());
         String dateToDisplay = "Selected Date: " + currentDateString;
         mDisplayDate.setText(dateToDisplay);
+        Calendar myCalendar = new GregorianCalendar(eventDateYear, eventDateMonth, eventDateDay, eventHour, eventMinute);    //creates a Date data type and passes it the date, month and year of the event
+        Date testEventDate = myCalendar.getTime();
+        checkEvents(testEventDate);
     }
 
     @Override
-    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {                              //Gets the time from the clock pop up box
         this.eventHour = hourOfDay;
         this.eventMinute = minute;
         if (String.valueOf(minute).length() == 1) {
@@ -154,82 +178,119 @@ public class createEventActivity extends AppCompatActivity implements DatePicker
             mDisplayTime.setText(timeToDisplay);
         }
     }
+//    private CollectionReference mColRef = FirebaseFirestore.getInstance().collection("events");     //sets the cloud firestore collection to be the "events" collection
+    private void checkEvents(Date testEventDate) {
+        Date dateFrom = new Date();
+        dateFrom = testEventDate;
+        long longFrom = testEventDate.getTime();
+        long longTo = longFrom + 86400000;
+        Date dateTo = new Date();
+        dateTo.setTime(longTo);
+        Log.d("Date from", String.valueOf(dateFrom));
+        Log.d("Date to", String.valueOf(dateTo));
 
+        List<String> eventsList = new ArrayList<>();
+        mColRef.whereGreaterThanOrEqualTo("Date", dateFrom).whereLessThan("Date", dateTo).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    for (QueryDocumentSnapshot document : task.getResult()) {               //Iterates through each document in cloud firestore
+                        Log.d("document:", document.getId() + " => " + document.get("Groups"));
+                        eventsList.add(document.getId());
+
+
+                    }
+                }else {
+                    Log.d("error", "Error getting documents: ", task.getException());
+            }
+            Log.d("eventsList", String.valueOf(eventsList));
+            Log.d("size", String.valueOf(eventsList.size()));
+            if(eventsList.size() == 0){
+                Log.d("Status: ", "This event can be made");
+                eventCanBeMade = true;
+                //Toast.makeText(createEventActivity.this, "This event can be made",Toast.LENGTH_SHORT).show();
+            }else{
+                Log.d("Status: ", "There is already an event on this day");
+                String warningString = "There is already an event on this day, choose another date";
+                mDisplayDate.setText(warningString);
+                eventCanBeMade = false;
+                //Toast.makeText(createEventActivity.this, "There is already an event on this day",Toast.LENGTH_SHORT).show();
+            }
+            }
+        });
+    }
     private void createEvent() {
         List<String> groupsList = new ArrayList<String>();                  //creates new array to store the list of groups for the event
-//        Calendar eventDate =  mDatePicker.getFirstSelectedDate();      //gets the data that is selected on the calendar by the user
-//        Log.i("eventDate", String.valueOf(eventDate));              //outputs the date, month and year for debugging purposes
-//        Log.i("eventDateYear", String.valueOf(eventDate.get(1)));
-//        Log.i("eventDateMonth", String.valueOf((eventDate.get(2))+1));
-//        Log.i("eventDateYear", String.valueOf(eventDate.get(5)));
-//
-//        Calendar myCalendar = new GregorianCalendar(eventDate.get(1), eventDate.get(2), eventDate.get(5));    //creates a Date data type and passes it the date, month and year of the event
 
         Calendar myCalendar = new GregorianCalendar(eventDateYear, eventDateMonth, eventDateDay, eventHour, eventMinute);    //creates a Date data type and passes it the date, month and year of the event
-
         Date finalEventDate = myCalendar.getTime();
         Log.i("final date", String.valueOf(finalEventDate));
 
+        Log.d("Can event be made? ", String.valueOf(eventCanBeMade));
+        if(eventCanBeMade == true){
+            if(mCheckBoxRed.isChecked()){                   //checks each checkbox to see if it is checked, if it is it adds the colour to groupsList and outputs the colour for debugging purposes
+                groupsList.add("Red");
+                Log.i("tag", "Red is added");
+                Log.i("list", groupsList.toString());
+            }
+            if(mCheckBoxOrange.isChecked()){
+                groupsList.add("Orange");
+                Log.i("tag", "Orange is added");
+                Log.i("list", groupsList.toString());
+            }
+            if(mCheckBoxYellow.isChecked()){
+                groupsList.add("Yellow");
+                Log.i("tag", "Yellow is added");
+                Log.i("list", groupsList.toString());
+            }
+            if(mCheckBoxGreen.isChecked()){
+                groupsList.add("Green");
+                Log.i("tag", "Green is added");
+                Log.i("list", groupsList.toString());
+            }
+            if(mCheckBoxBlue.isChecked()){
+                groupsList.add("Blue");
+                Log.i("tag", "Blue is added");
+                Log.i("list", groupsList.toString());
+            }
+            if(mCheckBoxIndigo.isChecked()){
+                groupsList.add("Indigo");
+                Log.i("tag", "Indigo is added");
+                Log.i("list", groupsList.toString());
+            }
+            if(mCheckBoxViolet.isChecked()){
+                groupsList.add("Violet");
+                Log.i("tag", "Violet is added");
+                Log.i("list", groupsList.toString());
+            }
 
-        if(mCheckBoxRed.isChecked()){                   //checks each checkbox to see if it is checked, if it is it adds the colour to groupsList and outputs the colour for debugging purposes
-            groupsList.add("Red");
-            Log.i("tag", "Red is added");
-            Log.i("list", groupsList.toString());
-        }
-        if(mCheckBoxOrange.isChecked()){
-            groupsList.add("Orange");
-            Log.i("tag", "Orange is added");
-            Log.i("list", groupsList.toString());
-        }
-        if(mCheckBoxYellow.isChecked()){
-            groupsList.add("Yellow");
-            Log.i("tag", "Yellow is added");
-            Log.i("list", groupsList.toString());
-        }
-        if(mCheckBoxGreen.isChecked()){
-            groupsList.add("Green");
-            Log.i("tag", "Green is added");
-            Log.i("list", groupsList.toString());
-        }
-        if(mCheckBoxBlue.isChecked()){
-            groupsList.add("Blue");
-            Log.i("tag", "Blue is added");
-            Log.i("list", groupsList.toString());
-        }
-        if(mCheckBoxIndigo.isChecked()){
-            groupsList.add("Indigo");
-            Log.i("tag", "Indigo is added");
-            Log.i("list", groupsList.toString());
-        }
-        if(mCheckBoxViolet.isChecked()){
-            groupsList.add("Violet");
-            Log.i("tag", "Violet is added");
-            Log.i("list", groupsList.toString());
-        }
-
-        String eventTitle = mEventTitleView.getText().toString().trim();    //gets the text typed in the title box and saves it as a string
-        String eventDetails = mEventDetailsView.getText().toString().trim();    //gets the text typed in the details box and saves it as a string
-        String eventLocation = mEventLocationView.getText().toString().trim();    //gets the text typed in the location box and saves it as a string
+            String eventTitle = mEventTitleView.getText().toString().trim();    //gets the text typed in the title box and saves it as a string
+            String eventDetails = mEventDetailsView.getText().toString().trim();    //gets the text typed in the details box and saves it as a string
+            String eventLocation = mEventLocationView.getText().toString().trim();    //gets the text typed in the location box and saves it as a string
 //        Log.i("details", eventDetails);
 
-        Map<String, Object> eventToSave = new HashMap<String, Object>();                    //creates a hashMap that stores the event data before it is saved to cloud firestore
-        eventToSave.put(TITLE_KEY, eventTitle);                            //adds all the required data to the hashMap
-        eventToSave.put(DETAILS_KEY, eventDetails);
-        eventToSave.put(LOCATION_KEY, eventLocation);
-        eventToSave.put(DATE_KEY, finalEventDate);
-        eventToSave.put(GROUPS_KEY, groupsList);
-        mColRef.add(eventToSave).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {      //saves the data to firestore and checks if the request is successful
-            @Override
-            public void onSuccess(DocumentReference documentReference) {                    //if the data is successfully saved to firestore, it creates a debug message and takes the user back to the MainActivity
-                Log.d("success", "Document has been saved!");
-                startActivity(new Intent(getApplicationContext(),MainActivity.class));
-            }
-        }).addOnFailureListener(new OnFailureListener() {                   //if the data is not successfully added to firestore, an error message is added to the Logcat
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Log.w("ERROR", "Document was not saved!");
-            }
-        });
+            Map<String, Object> eventToSave = new HashMap<String, Object>();                    //creates a hashMap that stores the event data before it is saved to cloud firestore
+            eventToSave.put(TITLE_KEY, eventTitle);                            //adds all the required data to the hashMap
+            eventToSave.put(DETAILS_KEY, eventDetails);
+            eventToSave.put(LOCATION_KEY, eventLocation);
+            eventToSave.put(DATE_KEY, finalEventDate);
+            eventToSave.put(GROUPS_KEY, groupsList);
+            mColRef.add(eventToSave).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {      //saves the data to firestore and checks if the request is successful
+                @Override
+                public void onSuccess(DocumentReference documentReference) {                    //if the data is successfully saved to firestore, it creates a debug message and takes the user back to the MainActivity
+                    Log.d("success", "Document has been saved!");
+                    startActivity(new Intent(getApplicationContext(),MainActivity.class));
+                }
+            }).addOnFailureListener(new OnFailureListener() {                   //if the data is not successfully added to firestore, an error message is added to the Logcat
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Log.w("ERROR", "Document was not saved!");
+                }
+            });
+        }else{
+            Log.d("Status", "Event is not going to be made");
+        }
+
 
 
     }

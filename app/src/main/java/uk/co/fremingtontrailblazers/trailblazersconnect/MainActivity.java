@@ -16,6 +16,7 @@ import android.widget.ImageView;
 import com.applandeo.materialcalendarview.CalendarView;
 import com.applandeo.materialcalendarview.EventDay;
 import com.applandeo.materialcalendarview.exceptions.OutOfDateRangeException;
+import com.applandeo.materialcalendarview.listeners.OnDayClickListener;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.Timestamp;
@@ -30,12 +31,14 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     Button mLogoutBtn;
     Button mCreateButton;
     Button mDisplayEventsButton;
+    Button mTestButton;
     CalendarView mCalendarView;
 
     private CollectionReference mColRef = FirebaseFirestore.getInstance().collection("events");     //sets the cloud firestore collection to be the "events" collection
@@ -68,10 +71,11 @@ public class MainActivity extends AppCompatActivity {
 //===================================================================================================================================================================================================================================================================
 
 //DOCUMENT ITERATION=====================================================================================================================================================================
-        mColRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
 
+        mColRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             Calendar calendar = Calendar.getInstance();
             List<EventDay> events = new ArrayList<>();          //Creates a list of EventDay objects
+            List<Date> datesList = new ArrayList<>();
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()) {
@@ -79,14 +83,17 @@ public class MainActivity extends AppCompatActivity {
                         //Log.d("document:", document.getId() + " => " + document.get("Groups"));
 
                         List<Object> groupsList = new ArrayList<>();         //Creates a list object called groupsList
+
                         groupsList = (List<Object>) document.get("Groups");  //Retrieves the groups from the document and adds them to groupsList
 
                         Date eventDate = document.getDate("Date");     //Retrieves the date from the document and sets it as a Date variable called eventDate
-                        Log.d("THE TIMESTAMP IS:", eventDate.toString());
-                        LocalDate localDate = eventDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-                        int month = localDate.getMonthValue();     //Extracts the month from the eventDate and sets it as an integer called month
-                        int year = localDate.getYear();            //Extracts the year from the eventDate and sets it as an integer called year
-                        int dayOfMonth = localDate.getDayOfMonth();//Extracts the day from the eventDate and sets it as an integer called dayOfMonth
+                        datesList.add(eventDate);
+                        Log.d("Dates LIST", datesList.toString());
+                        Calendar cal = Calendar.getInstance();
+                        cal.setTime(eventDate);
+                        int month = cal.get(Calendar.MONTH);
+                        int year = cal.get(Calendar.YEAR);
+                        int dayOfMonth = cal.get(Calendar.DAY_OF_MONTH);
                         Log.d("THE DATE IS:", eventDate.toString());
                         Log.d("THE DAY IS:", String.valueOf(dayOfMonth));
                         Log.d("THE MONTH IS:", String.valueOf(month));
@@ -142,7 +149,7 @@ public class MainActivity extends AppCompatActivity {
 
 
                         calendar = (Calendar) calendar.clone();
-                        calendar.set(year, month - 1, dayOfMonth);    //Tells the calendar which day to display the dots on, comes from the date extracted from the document
+                        calendar.set(year, month, dayOfMonth);    //Tells the calendar which day to display the dots on, comes from the date extracted from the document
                         events.add(new EventDay(calendar, dotInstanceDrawable));  //Adds the EventDay and the dots to the events list
                         CalendarView calendarView = (CalendarView) findViewById(R.id.eventCalendar); //Tells the library which calendar to add the dots to
                         try {
@@ -167,8 +174,16 @@ public class MainActivity extends AppCompatActivity {
 
         mLogoutBtn = findViewById(R.id.logoutButton);
         mCreateButton = findViewById(R.id.createButton);
-//        mCalendarView = findViewById(R.id.eventCalendar);
+        mCalendarView = findViewById(R.id.eventCalendar);
         mDisplayEventsButton = findViewById(R.id.displayEventsButton);
+        mTestButton = findViewById(R.id.testButton);
+
+        mTestButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getApplicationContext(), viewEventActivity.class));
+            }
+        });
 
 //        LayerDrawable layerDrawable = (LayerDrawable) getResources().getDrawable(R.drawable.multiple_dots);
 //        Drawable replaceGreen = (Drawable) getResources().getDrawable(R.drawable.dot_green);
@@ -180,6 +195,23 @@ public class MainActivity extends AppCompatActivity {
 //        events.add(new EventDay(calendar, R.drawable.multiple_dots));
 //        CalendarView calendarView = (CalendarView) findViewById(R.id.eventCalendar);
 //        calendarView.setEvents(events);
+
+        mCalendarView.setOnDayClickListener(new OnDayClickListener() {
+            @Override
+            public void onDayClick(EventDay eventDay) {
+                Calendar clickedDayCalendar = eventDay.getCalendar();
+                Log.d("Day clicked", String.valueOf(clickedDayCalendar));
+                Log.d("eventDateYear", String.valueOf(clickedDayCalendar.get(1)));
+                Log.d("eventDateMonth", String.valueOf((clickedDayCalendar.get(2))+1));
+                Log.d("eventDateDay", String.valueOf(clickedDayCalendar.get(5)));
+                Calendar myCalendar = new GregorianCalendar(clickedDayCalendar.get(1), clickedDayCalendar.get(2), clickedDayCalendar.get(5));    //creates a Date data type and passes it the date, month and year of the event
+                Date finalSelectedDate = myCalendar.getTime();
+                Log.d("final date", String.valueOf(finalSelectedDate));
+                Intent intent = new Intent(getApplicationContext(), viewEventActivity.class);
+                intent.putExtra("SELECTED_DATE", finalSelectedDate);
+                startActivity(intent);
+            }
+        });
 
         mDisplayEventsButton.setOnClickListener(new View.OnClickListener() {
             @Override
