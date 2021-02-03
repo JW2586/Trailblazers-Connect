@@ -73,6 +73,7 @@ public class createEventActivity extends AppCompatActivity implements DatePicker
     CheckBox mCheckBoxViolet;
     Button mSelectDateButton;
     Button mSelectTimeButton;
+    Button mBackButton;
     TextView mDisplayDate;
     TextView mDisplayTime;
     private CollectionReference mColRef = FirebaseFirestore.getInstance().collection("events");     //sets the cloud firestore collection to be the "events" collection
@@ -97,6 +98,23 @@ public class createEventActivity extends AppCompatActivity implements DatePicker
         mSelectTimeButton = findViewById(R.id.selectTimeButton);
         mDisplayDate = findViewById(R.id.displayDate);
         mDisplayTime = findViewById(R.id.displayTime);
+        mBackButton = findViewById(R.id.saveBackButton);
+
+        mBackButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mBackButton.setBackgroundResource(R.drawable.back_button_pressed);
+                Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        mBackButton.setBackgroundResource(R.drawable.back_button);
+                    }
+                }, 100);
+                startActivity(new Intent(getApplicationContext(),MainActivity.class));
+                finish();
+            }
+        });
         mSelectDateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -268,26 +286,32 @@ public class createEventActivity extends AppCompatActivity implements DatePicker
             String eventDetails = mEventDetailsView.getText().toString().trim();    //gets the text typed in the details box and saves it as a string
             String eventLocation = mEventLocationView.getText().toString().trim();    //gets the text typed in the location box and saves it as a string
 //        Log.i("details", eventDetails);
+            if(groupsList.isEmpty()){
+                Toast.makeText(createEventActivity.this, "You must select a Group", Toast.LENGTH_SHORT).show();
+            }else{
+                Map<String, Object> eventToSave = new HashMap<String, Object>();                    //creates a hashMap that stores the event data before it is saved to cloud firestore
+                eventToSave.put(TITLE_KEY, eventTitle);                            //adds all the required data to the hashMap
+                eventToSave.put(DETAILS_KEY, eventDetails);
+                eventToSave.put(LOCATION_KEY, eventLocation);
+                eventToSave.put(DATE_KEY, finalEventDate);
+                eventToSave.put(GROUPS_KEY, groupsList);
+                mColRef.add(eventToSave).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {      //saves the data to firestore and checks if the request is successful
+                    @Override
+                    public void onSuccess(DocumentReference documentReference) {                    //if the data is successfully saved to firestore, it creates a debug message and takes the user back to the MainActivity
+                        Log.d("success", "Document has been saved!");
+                        startActivity(new Intent(getApplicationContext(),MainActivity.class));
+                        finish();
+                    }
+                }).addOnFailureListener(new OnFailureListener() {                   //if the data is not successfully added to firestore, an error message is added to the Logcat
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w("ERROR", "Document was not saved!");
+                    }
+                });
+            }
 
-            Map<String, Object> eventToSave = new HashMap<String, Object>();                    //creates a hashMap that stores the event data before it is saved to cloud firestore
-            eventToSave.put(TITLE_KEY, eventTitle);                            //adds all the required data to the hashMap
-            eventToSave.put(DETAILS_KEY, eventDetails);
-            eventToSave.put(LOCATION_KEY, eventLocation);
-            eventToSave.put(DATE_KEY, finalEventDate);
-            eventToSave.put(GROUPS_KEY, groupsList);
-            mColRef.add(eventToSave).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {      //saves the data to firestore and checks if the request is successful
-                @Override
-                public void onSuccess(DocumentReference documentReference) {                    //if the data is successfully saved to firestore, it creates a debug message and takes the user back to the MainActivity
-                    Log.d("success", "Document has been saved!");
-                    startActivity(new Intent(getApplicationContext(),MainActivity.class));
-                }
-            }).addOnFailureListener(new OnFailureListener() {                   //if the data is not successfully added to firestore, an error message is added to the Logcat
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    Log.w("ERROR", "Document was not saved!");
-                }
-            });
         }else{
+            Toast.makeText(createEventActivity.this, "You must select a Date", Toast.LENGTH_SHORT).show();
             Log.d("Status", "Event is not going to be made");
         }
 

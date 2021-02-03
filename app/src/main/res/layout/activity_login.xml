@@ -8,32 +8,36 @@
     tools:context=".Login">
 
     <TextView
-        android:id="@+id/createAccountText"
-        android:layout_width="200dp"
+        android:id="@+id/forgotPasswordText"
+        android:layout_width="139dp"
         android:layout_height="20dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
         android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginRight="16dp"
         android:background="#FFFFFF"
-        android:text="New Here? Create An Account"
+        android:text="  Forgot Password?"
         android:textColor="@color/TrailBlazersOrange"
         android:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/TextPassword" />
+
+    <TextView
+        android:id="@+id/createAccountText"
+        android:layout_width="225dp"
+        android:layout_height="22dp"
+        android:layout_marginTop="16dp"
+        android:background="#FFFFFF"
+        android:text="  New Here? Create An Account"
+        android:textColor="@color/TrailBlazersOrange"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/loginButton" />
 
     <TextView
         android:id="@+id/loginText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
+        android:layout_width="118dp"
+        android:layout_height="56dp"
         android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginRight="16dp"
         android:text="Login"
         android:textSize="36sp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -42,29 +46,19 @@
 
     <Button
         android:id="@+id/loginButton"
-        android:layout_width="209dp"
-        android:layout_height="69dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
+        android:layout_width="170dp"
+        android:layout_height="60dp"
         android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginRight="16dp"
-        android:layout_marginBottom="16dp"
         android:background="@drawable/login_button"
-        app:layout_constraintBottom_toTopOf="@+id/createAccountText"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/TextPassword" />
+        app:layout_constraintTop_toBottomOf="@+id/forgotPasswordText" />
 
     <EditText
         android:id="@+id/TextPassword"
         android:layout_width="285dp"
         android:layout_height="45dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
         android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginRight="16dp"
         android:ems="10"
         android:hint="Password"
         android:inputType="textPassword"
@@ -77,11 +71,7 @@
         android:id="@+id/TextEmailAddress"
         android:layout_width="285dp"
         android:layout_height="45dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginRight="16dp"
+        android:layout_marginTop="8dp"
         android:ems="10"
         android:hint="Email"
         android:inputType="textEmailAddress"
@@ -92,15 +82,13 @@
 
     <ImageView
         android:id="@+id/imageView2"
-        android:layout_width="358dp"
-        android:layout_height="281dp"
+        android:layout_width="330dp"
+        android:layout_height="240dp"
         android:layout_marginTop="16dp"
         android:contentDescription="@string/app_name"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.092"
         app:srcCompat="@drawable/trailblazers_connect_logo" />
 </androidx.constraintlayout.widget.ConstraintLayout>
 

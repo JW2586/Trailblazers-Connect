@@ -12,5 +12,6 @@
     <color name="Blue">#0000ff</color>
     <color name="Indigo">#4b0082</color>
     <color name="Violet">#ee82ee</color>
-    <color name="black">#000000</color>
+    <color name="Black">#000000</color>
+    <color name="White">#ffffff</color>
 </resources>
