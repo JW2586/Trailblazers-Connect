@@ -44,7 +44,6 @@ public class MainActivity extends AppCompatActivity {
     Button mLogoutBtn;          //creates variables for each UI element
     Button mCreateButton;
     Button mDisplayEventsButton;
-    Button mTestButton;
     CalendarView mCalendarView;
     public boolean canViewEvent;
     FirebaseAuth fAuth;
@@ -56,8 +55,6 @@ public class MainActivity extends AppCompatActivity {
 
     private void checkEvents(Date dateFrom) {
         Date dateTo = new Date(dateFrom.getTime() + (1000 * 60 * 60 * 24)); //sets the end date to be the selected date + 24 hours
-        Log.d("Date from", String.valueOf(dateFrom));
-        Log.d("Date to", String.valueOf(dateTo));
 
         List<String> eventsList = new ArrayList<>();    //creates a list to store all of the returned events
         mColRefEvents.whereGreaterThanOrEqualTo("Date", dateFrom).whereLessThan("Date", dateTo).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {   //queries FireStore to only return events that are within 24 hours of the selected date(same day)
@@ -65,29 +62,21 @@ public class MainActivity extends AppCompatActivity {
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()) {
                     for (QueryDocumentSnapshot document : task.getResult()) {               //iterates through each document in cloud firestore
-                        Log.d("document:", document.getId() + " => " + document.get("Groups"));
                         eventsList.add(document.getId());       //if there is an event on the selected day, it is added to eventsList
                     }
                 } else {
-                    Log.d("error", "Error getting documents: ", task.getException());
                 }
-                Log.d("eventsList", String.valueOf(eventsList));
-                Log.d("size", String.valueOf(eventsList.size()));
                 if (eventsList.size() == 0) {   //if there are no events on this day, then there is no event to view
-                    Log.d("Status: ", "There is not an event on this day");
                     canViewEvent = false;
                 } else {        //if there is an event on this day, then the event can be viewed
-                    Log.d("Status: ", "There is an event on this day");
                     canViewEvent = true;
                 }
-                Log.d("CANVIEWEVENT", String.valueOf(canViewEvent));
                 if(canViewEvent == true) {  //if there is an event on this day the user is sent to viewEventActivity
                     Intent intent = new Intent(getApplicationContext(), viewEventActivity.class);
                     intent.putExtra("SELECTED_DATE", dateFrom);     //the selected date, dateFrom, is passed into viewEventActivity
                     startActivity(intent);
                     finish();
                 }else{  //if there is not an events on the selected day, a Toast message is displayed to the user
-                    Log.d("Status", "event won't be displayed");
                     Toast.makeText(MainActivity.this, "There is not an event on this day",Toast.LENGTH_SHORT).show();
                 }
             }
@@ -106,57 +95,43 @@ public class MainActivity extends AppCompatActivity {
                         groupsList = (List<Object>) document.get("Groups");  //retrieves the groups from the document and adds them to groupsList
                         Date eventDate = document.getDate("Date");     //retrieves the date from the document and sets it as a Date variable called eventDate
                         datesList.add(eventDate);             //adds the retrieved date, eventDate, to datesList
-                        Log.d("Dates LIST", datesList.toString());
 
                         Calendar cal = Calendar.getInstance();  //creates a new calendar object set to the date of the event
                         cal.setTime(eventDate);
                         int month = cal.get(Calendar.MONTH);
                         int year = cal.get(Calendar.YEAR);
                         int dayOfMonth = cal.get(Calendar.DAY_OF_MONTH);
-                        Log.d("THE DATE IS:", eventDate.toString());
-                        Log.d("THE DAY IS:", String.valueOf(dayOfMonth));
-                        Log.d("THE MONTH IS:", String.valueOf(month));
 
-                        Log.d("THE YEAR IS:", String.valueOf(year));
                         LayerDrawable layerDrawable = (LayerDrawable) getResources().getDrawable(R.drawable.multiple_dots); //loads in the empty dots
                         LayerDrawable dotInstanceDrawable;
                         dotInstanceDrawable = (LayerDrawable) layerDrawable.getConstantState().newDrawable().mutate();  //mutates layerDrawable to create a new instance of it called dotInstanceDrawable
 
-                        Log.d("document:", document.getId() + " => " + document.get("Groups"));
                         for (int i = 0; i < groupsList.size(); i++) {        //iterates through the groupsList for each document
-//                            Log.d("group", groupsList.get(i).toString());
                             if (groupsList.get(i).toString().equals("Red")) {           //checks the colours found in the groupsList
-                                Log.d("message", "there is a red in here");
                                 Drawable replaceDot = (Drawable) getResources().getDrawable(R.drawable.dot_red);    //if a colour is in the groupsList, it sets the replaceDot drawable to be a dot of that colour
                                 dotInstanceDrawable.setDrawableByLayerId(R.id.dot1, replaceDot);        //the specific dot in the template is replaced by that colour
                             }
                             if (groupsList.get(i).toString().equals("Orange")) {
-                                Log.d("message", "there is a orange in here");
                                 Drawable replaceDot = (Drawable) getResources().getDrawable(R.drawable.dot_orange);
                                 dotInstanceDrawable.setDrawableByLayerId(R.id.dot2, replaceDot);
                             }
                             if (groupsList.get(i).toString().equals("Yellow")) {
-                                Log.d("message", "there is a yellow in here");
                                 Drawable replaceDot = (Drawable) getResources().getDrawable(R.drawable.dot_yellow);
                                 dotInstanceDrawable.setDrawableByLayerId(R.id.dot3, replaceDot);
                             }
                             if (groupsList.get(i).toString().equals("Green")) {
-                                Log.d("message", "there is a green in here");
                                 Drawable replaceDot = (Drawable) getResources().getDrawable(R.drawable.dot_green);
                                 dotInstanceDrawable.setDrawableByLayerId(R.id.dot4, replaceDot);
                             }
                             if (groupsList.get(i).toString().equals("Blue")) {
-                                Log.d("message", "there is a blue in here");
                                 Drawable replaceDot = (Drawable) getResources().getDrawable(R.drawable.dot_blue);
                                 dotInstanceDrawable.setDrawableByLayerId(R.id.dot5, replaceDot);
                             }
                             if (groupsList.get(i).toString().equals("Indigo")) {
-                                Log.d("message", "there is a indigo in here");
                                 Drawable replaceDot = (Drawable) getResources().getDrawable(R.drawable.dot_indigo);
                                 dotInstanceDrawable.setDrawableByLayerId(R.id.dot6, replaceDot);
                             }
                             if (groupsList.get(i).toString().equals("Violet")) {
-                                Log.d("message", "there is a violet in here");
                                 Drawable replaceDot = (Drawable) getResources().getDrawable(R.drawable.dot_violet);
                                 dotInstanceDrawable.setDrawableByLayerId(R.id.dot7, replaceDot);
                             }
@@ -173,7 +148,6 @@ public class MainActivity extends AppCompatActivity {
                         calendarView.setEvents(events);  //adds the event to the calendar and displays the dots
                     }
                 } else {
-                    Log.d("error", "Error getting documents: ", task.getException());
                 }
             }
         });
@@ -188,8 +162,6 @@ public class MainActivity extends AppCompatActivity {
         mCreateButton = findViewById(R.id.createButton);
         mCalendarView = findViewById(R.id.eventCalendar);
         mDisplayEventsButton = findViewById(R.id.displayEventsButton);
-//        mTestButton = findViewById(R.id.testButton);
-//        mTestButton.setVisibility(View.INVISIBLE);
 
         fAuth = FirebaseAuth.getInstance();  //creates a new FirebaseAuth instance called fAuth
         user = fAuth.getCurrentUser();      //gets the current user
@@ -205,7 +177,6 @@ public class MainActivity extends AppCompatActivity {
             finish();
         }
         userID = fAuth.getCurrentUser().getUid();   //gets the ID of the current user
-        Log.d("CURRENT USER",userID);
         mCreateButton.setVisibility(View.INVISIBLE);
         mColRefUsers.document(userID).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {  //queries FireStore to find the document containing that user
             @Override
@@ -213,18 +184,10 @@ public class MainActivity extends AppCompatActivity {
                 if (task.isSuccessful()) {
                     DocumentSnapshot document = task.getResult();
                     if (document.exists()) {
-                        Log.d("tag", "DocumentSnapshot data: " + document.getData());
                         if (String.valueOf(document.get("Role")).equals("Coach")) {     //if the user's Role is "Coach" then the create event button is made visible
-                            Log.d("tag", "User is a coach");
                             mCreateButton.setVisibility(View.VISIBLE);   //allows the create event button to be pressed
-                        }else{
-                            Log.d("tag", "User is not a coach");
                         }
-                    } else {
-                        Log.d("tag", "No such document");
                     }
-                } else {
-                    Log.d("tag", "get failed with ", task.getException());
                 }
             }
         });
@@ -233,16 +196,9 @@ public class MainActivity extends AppCompatActivity {
         mCalendarView.setOnDayClickListener(new OnDayClickListener() {  //when the user clicks on a date on the calendar
             @Override
             public void onDayClick(EventDay eventDay) {
-                Log.d("EVENTDAY", String.valueOf(eventDay));
                 Calendar clickedDayCalendar = eventDay.getCalendar();
-                Log.d("Day clicked", String.valueOf(clickedDayCalendar));
-                Log.d("eventDateYear", String.valueOf(clickedDayCalendar.get(1)));
-                Log.d("eventDateMonth", String.valueOf((clickedDayCalendar.get(2))+1));
-                Log.d("eventDateDay", String.valueOf(clickedDayCalendar.get(5)));
-
                 Calendar myCalendar = new GregorianCalendar(clickedDayCalendar.get(1), clickedDayCalendar.get(2), clickedDayCalendar.get(5));    //creates a calendar date set to the date, month and year of the event that was clicked
                 Date finalSelectedDate = myCalendar.getTime();  //creates a Date called finalSelectedDate that stores the date that was clicked
-                Log.d("final date", String.valueOf(finalSelectedDate));
                 checkEvents(finalSelectedDate);     //passes the finalSelectedDate into checkEvents to see if there is an event on the selected date
             }
         });
@@ -288,7 +244,6 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         mCreateButton.setBackgroundResource(R.drawable.create_button);
-                        Log.i("tag", "create button pressed");
                     }
                 }, 100);
                 startActivity(new Intent(getApplicationContext(), createEventActivity.class));  //the user is sent to createEventActivity

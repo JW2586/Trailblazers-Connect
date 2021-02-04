@@ -45,7 +45,6 @@ public class VerifyEmailActivity extends AppCompatActivity {
         user = fAuth.getCurrentUser();
         String fullName = getIntent().getStringExtra("User Name");  //receives the user's full name and email address from the Register activity
         String email = getIntent().getStringExtra("Email");
-        Log.d("CURRENT USER", String.valueOf(userID));
 
         mResendButton.setOnClickListener(new View.OnClickListener() {     //if the user has not received a verification email, they click this button
             @Override
@@ -66,7 +65,6 @@ public class VerifyEmailActivity extends AppCompatActivity {
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Log.d("tag", "onFailure: Email not sent " + e.getMessage());
                     }
                 });
             }
@@ -86,11 +84,11 @@ public class VerifyEmailActivity extends AppCompatActivity {
                 user = fAuth.getCurrentUser();  //gets the current user
                 user.reload();      //reloads the user
                 user = fAuth.getCurrentUser();  //gets the current user again to ensure that it is correct
+
                 //***the program waits for 2 seconds to ensure that the user has been successfully reloaded***
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        Log.d("TAG", String.valueOf(user.isEmailVerified()));
                         if(user.isEmailVerified()){     //if the user's email address has been verified in Firebase
                             Toast.makeText(VerifyEmailActivity.this, "Email successfully verified", Toast.LENGTH_SHORT).show();
                             userID = Objects.requireNonNull(fAuth.getCurrentUser()).getUid();   //gets the current user's ID for the title of the created document
@@ -101,18 +99,15 @@ public class VerifyEmailActivity extends AppCompatActivity {
                             mColRef.document(userID).set(userData).addOnSuccessListener(new OnSuccessListener<Void>() { //adds the userData to a document in FireStore with the title of the user's ID
                                 @Override
                                 public void onSuccess(Void aVoid) {
-                                    Log.d("success", "Document has been saved!");
                                 }
                             }).addOnFailureListener(new OnFailureListener() {                   //if the data is not successfully added to firestore, an error message is added to the Logcat
                                 @Override
                                 public void onFailure(@NonNull Exception e) {
-                                    Log.w("ERROR", "Document was not saved!");
                                 }
                             });
                             startActivity(new Intent(getApplicationContext(),MainActivity.class));  //sends the user to MainActivity
                         }else{
                             Toast.makeText(VerifyEmailActivity.this, "Your Email has not been verified", Toast.LENGTH_SHORT).show();
-                            Log.d("CURRENT USER", String.valueOf(userID));
                         }
                     }
                 }, 2000);

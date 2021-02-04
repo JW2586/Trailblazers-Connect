@@ -101,7 +101,6 @@ public class Register extends AppCompatActivity {
                             }).addOnFailureListener(new OnFailureListener() {
                                 @Override
                                 public void onFailure(@NonNull Exception e) {
-                                    Log.d("tag", "onFailure: Email not sent " + e.getMessage());
                                 }
                             });
                             Toast.makeText(Register.this, "Account Created", Toast.LENGTH_SHORT).show();

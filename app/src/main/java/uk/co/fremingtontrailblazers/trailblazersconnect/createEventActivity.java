@@ -200,8 +200,6 @@ public class createEventActivity extends AppCompatActivity implements DatePicker
         long longTo = longFrom + 86400000;  //sets the end date to be the selected date + 24 hours
         Date dateTo = new Date();
         dateTo.setTime(longTo);
-        Log.d("Date from", String.valueOf(dateFrom));
-        Log.d("Date to", String.valueOf(dateTo));
 
         List<String> eventsList = new ArrayList<>(); //creates a list to store all of the returned events
         mColRef.whereGreaterThanOrEqualTo("Date", dateFrom).whereLessThan("Date", dateTo).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {     //queries FireStore to only return events that are within 24 hours of the selected date (same day)
@@ -209,26 +207,17 @@ public class createEventActivity extends AppCompatActivity implements DatePicker
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()) {
                     for (QueryDocumentSnapshot document : task.getResult()) {               //iterates through each document in cloud firestore
-                        Log.d("document:", document.getId() + " => " + document.get("Groups"));
                         eventsList.add(document.getId());   //if there is an event on the selected day, it is added to eventsList
                     }
                 }else {
-                    Log.d("error", "Error getting documents: ", task.getException());
             }
-            Log.d("eventsList", String.valueOf(eventsList));
-            Log.d("size", String.valueOf(eventsList.size()));
 
             if(eventsList.size() == 0){     //if there are no events on this day, then the event can be made
-                Log.d("Status: ", "This event can be made");
                 eventCanBeMade = true;
-                //Toast.makeText(createEventActivity.this, "This event can be made",Toast.LENGTH_SHORT).show();
-
             }else{                //if there is already an event on this day, then the event cannot be made
-                Log.d("Status: ", "There is already an event on this day");
                 String warningString = "There is already an event on this day, choose a different date";
                 mDisplayDate.setText(warningString);    //displays a message underneath the button to choose a different date
                 eventCanBeMade = false;
-                //Toast.makeText(createEventActivity.this, "There is already an event on this day",Toast.LENGTH_SHORT).show();
             }
             }
         });
@@ -238,50 +227,33 @@ public class createEventActivity extends AppCompatActivity implements DatePicker
 
         Calendar myCalendar = new GregorianCalendar(eventDateYear, eventDateMonth, eventDateDay, eventHour, eventMinute);    //creates a Date data type and passes it the date, month and year of the event
         Date finalEventDate = myCalendar.getTime();
-        Log.i("final date", String.valueOf(finalEventDate));
 
-        Log.d("Can event be made? ", String.valueOf(eventCanBeMade));
         if(eventCanBeMade == true){     //only creates the event if the event is allowed to be created
             if(mCheckBoxRed.isChecked()){                   //checks each checkbox to see if it is checked, if it is it adds the colour to groupsList
                 groupsList.add("Red");
-                Log.i("tag", "Red is added");
-                Log.i("list", groupsList.toString());
             }
             if(mCheckBoxOrange.isChecked()){
                 groupsList.add("Orange");
-                Log.i("tag", "Orange is added");
-                Log.i("list", groupsList.toString());
             }
             if(mCheckBoxYellow.isChecked()){
                 groupsList.add("Yellow");
-                Log.i("tag", "Yellow is added");
-                Log.i("list", groupsList.toString());
             }
             if(mCheckBoxGreen.isChecked()){
                 groupsList.add("Green");
-                Log.i("tag", "Green is added");
-                Log.i("list", groupsList.toString());
             }
             if(mCheckBoxBlue.isChecked()){
                 groupsList.add("Blue");
-                Log.i("tag", "Blue is added");
-                Log.i("list", groupsList.toString());
             }
             if(mCheckBoxIndigo.isChecked()){
                 groupsList.add("Indigo");
-                Log.i("tag", "Indigo is added");
-                Log.i("list", groupsList.toString());
             }
             if(mCheckBoxViolet.isChecked()){
                 groupsList.add("Violet");
-                Log.i("tag", "Violet is added");
-                Log.i("list", groupsList.toString());
             }
 
             String eventTitle = mEventTitleView.getText().toString().trim();    //gets the text typed in the title box and saves it as a string
             String eventDetails = mEventDetailsView.getText().toString().trim();    //gets the text typed in the details box and saves it as a string
             String eventLocation = mEventLocationView.getText().toString().trim();    //gets the text typed in the location box and saves it as a string
-//        Log.i("details", eventDetails);
             if(groupsList.isEmpty()){
                 Toast.makeText(createEventActivity.this, "You must select a Group", Toast.LENGTH_SHORT).show();
             }else{
@@ -294,22 +266,17 @@ public class createEventActivity extends AppCompatActivity implements DatePicker
                 mColRef.add(eventToSave).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {      //saves the data to firestore and checks if the request is successful
                     @Override
                     public void onSuccess(DocumentReference documentReference) {
-                        Log.d("success", "Document has been saved!");
                         startActivity(new Intent(getApplicationContext(),MainActivity.class));      //if the data is successfully saved to firestore, the user is taken back to the MainActivity
                         finish();
                     }
-                }).addOnFailureListener(new OnFailureListener() {                   //if the data is not successfully added to firestore, an error message is added to the Logcat
+                }).addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Log.w("ERROR", "Document was not saved!");
                     }
                 });
             }
-
         }else{
             Toast.makeText(createEventActivity.this, "You must select a Date", Toast.LENGTH_SHORT).show();  //if the event cannot be made, the user must select a different date
-            Log.d("Status", "Event is not going to be made");
         }
     }
-
 }
