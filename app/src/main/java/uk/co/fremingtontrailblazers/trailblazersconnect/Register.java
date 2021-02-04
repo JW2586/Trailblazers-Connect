@@ -37,7 +37,6 @@ public class Register extends AppCompatActivity {
     Button mRegisterBtn;
     TextView mLoginHereText;
     FirebaseAuth fAuth;
-    String userID;
     private CollectionReference mColRef = FirebaseFirestore.getInstance().collection("users");     //sets the cloud firestore collection to be the "events" collection
 
 
@@ -52,15 +51,14 @@ public class Register extends AppCompatActivity {
         mRegisterBtn = findViewById(R.id.registerButton);
         mLoginHereText = findViewById(R.id.loginHereText);
 
-        fAuth = FirebaseAuth.getInstance();
+        fAuth = FirebaseAuth.getInstance();     //gets the current FirebaseAuth instance
 
-        if(fAuth.getCurrentUser() != null) {            //checks to see if user is already logged in, if they are, it sends them to the MainActivity
-            startActivity(new Intent(getApplicationContext(),MainActivity.class));
+        if(fAuth.getCurrentUser() != null) {        //checks to see if user is already logged in
+            startActivity(new Intent(getApplicationContext(),MainActivity.class));  //if the user is logged in, they are sent to MainActivity
             finish();
         }
 
-
-        mRegisterBtn.setOnClickListener(new View.OnClickListener() {
+        mRegisterBtn.setOnClickListener(new View.OnClickListener() {    //when the user clicks on the Register button
             @Override
             public void onClick(View v) {
                 mRegisterBtn.setBackgroundResource(R.drawable.register_button_pressed);
@@ -71,32 +69,31 @@ public class Register extends AppCompatActivity {
                         mRegisterBtn.setBackgroundResource(R.drawable.register_button);
                     }
                 }, 100);
-
-                String email = mEmail.getText().toString().trim();          //gets the email and password from the text input boxes and converts them to strings
+                String email = mEmail.getText().toString().trim();          //gets the email, password and full name from the text input boxes and converts them to strings
                 String password = mPassword.getText().toString().trim();
                 String fullName = mFullName.getText().toString();
 
-                if(TextUtils.isEmpty(email)){                               //if the email field is left empty, it sends an error to the user
+                if(TextUtils.isEmpty(email)){          //if the email field is left empty, it sends an error to the user
                     mEmail.setError("An email address is needed");
                     return;
                 }
 
-                if (TextUtils.isEmpty(password)){                           //if the password field is left empty, it sends an error to the user
+                if (TextUtils.isEmpty(password)){      //if the password field is left empty, it sends an error to the user
                     mPassword.setError("A password is needed");
                     return;
                 }
 
-                if(password.length() < 8){                                  //this makes sure that the user enters a password that is 8 characters or more
+                if(password.length() < 8){             //this makes sure that the user enters a password that is 8 characters or more
                     mPassword.setError("Your password must be at least 8 characters");
                     return;
                 }
 
-                fAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {     //starts the user creation process in Firebase
+                fAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {     //starts the user creation process in FirebaseAuth
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
-                        if(task.isSuccessful()){                                                                                        //if the account is successfully create, a message is displayed and the user is sent to the MainActivity
-                            FirebaseUser currentUser = fAuth.getCurrentUser();
-                            currentUser.sendEmailVerification().addOnSuccessListener(new OnSuccessListener<Void>() {
+                        if(task.isSuccessful()){                       //if the account is successfully created
+                            FirebaseUser currentUser = fAuth.getCurrentUser();  //gets the current user
+                            currentUser.sendEmailVerification().addOnSuccessListener(new OnSuccessListener<Void>() {    //sends a verification email to the user's inputted email address
                                 @Override
                                 public void onSuccess(Void aVoid) {
                                     Toast.makeText(Register.this, "Verification Email Has been Sent.", Toast.LENGTH_SHORT).show();
@@ -107,31 +104,13 @@ public class Register extends AppCompatActivity {
                                     Log.d("tag", "onFailure: Email not sent " + e.getMessage());
                                 }
                             });
-
                             Toast.makeText(Register.this, "Account Created", Toast.LENGTH_SHORT).show();
-//                            userID = Objects.requireNonNull(fAuth.getCurrentUser()).getUid();
-//                            Map<String, Object> userData = new HashMap<>();
-//                            userData.put("Full Name", fullName);
-//                            userData.put("Email", email);
-//                            userData.put("Role", "Runner");
-//                            mColRef.document(userID).set(userData).addOnSuccessListener(new OnSuccessListener<Void>() {
-//                                @Override
-//                                public void onSuccess(Void aVoid) {
-//                                    Log.d("success", "Document has been saved!");
-//                                }
-//                            }).addOnFailureListener(new OnFailureListener() {                   //if the data is not successfully added to firestore, an error message is added to the Logcat
-//                                @Override
-//                                public void onFailure(@NonNull Exception e) {
-//                                    Log.w("ERROR", "Document was not saved!");
-//                                }
-//                            });
-                            Intent intent = new Intent(getApplicationContext(), VerifyEmailActivity.class);
-                            intent.putExtra("User Name", fullName);
+                            Intent intent = new Intent(getApplicationContext(), VerifyEmailActivity.class);     //creates a new Intent to start VerifiyEmailActivity
+                            intent.putExtra("User Name", fullName); //passes the user's full name and email address to VerifyEmailActivity
                             intent.putExtra("Email", email);
-                            startActivity(intent);
+                            startActivity(intent);  //starts VerifyEmailActivity
                             finish();
-//                            startActivity(new Intent(getApplicationContext(),VerifyEmailActivity.class));
-                        }else {                                                                                                         //if an error occurs, a message is displayed
+                        }else {   //if an error occurs, a message is displayed
                             Toast.makeText(Register.this, "An error has occurred, " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                         }
                     }
@@ -139,7 +118,7 @@ public class Register extends AppCompatActivity {
             }
         });
 
-        mLoginHereText.setOnClickListener(new View.OnClickListener() {
+        mLoginHereText.setOnClickListener(new View.OnClickListener() {  //if the user has already created an account, they should press the "login here" text
             @Override
             public void onClick(View v) {
                 mLoginHereText.setTextColor(getResources().getColor(R.color.TbDarkOrange));
@@ -150,7 +129,7 @@ public class Register extends AppCompatActivity {
                         mLoginHereText.setTextColor(getResources().getColor(R.color.TrailBlazersOrange));
                     }
                 }, 100);
-                startActivity(new Intent(getApplicationContext(),Login.class));
+                startActivity(new Intent(getApplicationContext(),Login.class)); //sends the user to the Login activity
                 finish();
             }
         });

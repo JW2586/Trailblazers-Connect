@@ -37,7 +37,7 @@ import java.util.Date;
 import java.util.List;
 
 public class viewEventActivity extends AppCompatActivity {
-    Button mNextTestButton;
+    Button mNextTestButton;     //creates variables for each UI element
     Button mBackButton;
     TextView mEventTitle;
     TextView mEventDate;
@@ -66,7 +66,7 @@ public class viewEventActivity extends AppCompatActivity {
     }
 
     public void getEvents(Date dateFrom) {
-        mEventTitle = findViewById(R.id.displayEventTitle);
+        mEventTitle = findViewById(R.id.displayEventTitle);   //assigns the UI elements to each variable
         mEventDate = findViewById(R.id.displayEventDate);
         mEventTime = findViewById(R.id.displayEventTime);
         mEventLocation = findViewById(R.id.displayEventLocation);
@@ -79,34 +79,33 @@ public class viewEventActivity extends AppCompatActivity {
         mDisplayBlue = findViewById(R.id.displayBlue);
         mDisplayIndigo = findViewById(R.id.displayIndigo);
         mDisplayViolet = findViewById(R.id.displayViolet);
-        Date dateTo = new Date(dateFrom.getTime() + (1000 * 60 * 60 * 24));
-        mColRef.whereGreaterThanOrEqualTo("Date", dateFrom).whereLessThan("Date", dateTo).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+        Date dateTo = new Date(dateFrom.getTime() + (1000 * 60 * 60 * 24));  //sets the end date to be the selected date + 24 hours
+        mColRef.whereGreaterThanOrEqualTo("Date", dateFrom).whereLessThan("Date", dateTo).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {   //queries FireStore to only return events that are within 24 hours of the selected date (same day)
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()) {
-                    for (QueryDocumentSnapshot document : task.getResult()) {               //Iterates through each document in cloud firestore
-                        List<Object> groupsList;         //Creates a list object called groupsList
-                        groupsList = (List<Object>) document.get("Groups");  //Retrieves the groups from the document and adds them to groupsList
+                    for (QueryDocumentSnapshot document : task.getResult()) {               //iterates through each document in cloud firestore
+                        List<Object> groupsList;         //creates a list of objects called groupsList
+                        groupsList = (List<Object>) document.get("Groups");  //retrieves the groups from the document and adds them to groupsList
                         Log.d("document:", document.getId() + " => " + document.get("Groups"));
                         Log.d("title", String.valueOf(document.get("Title")));
 
-                        mEventGroups.setText(String.valueOf(document.get("Groups")));
+                        mEventGroups.setText(String.valueOf(document.get("Groups")));   //retrieves the event's details, title, location and groups and displays them in the text boxes
                         mEventDetails.setText(document.getString("Details"));
                         mEventLocation.setText(document.getString("Location"));
                         mEventTitle.setText(document.getString("Title"));
-                        LocalDate localDate = (document.getDate("Date")).toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-                        LocalTime time = LocalDateTime.ofInstant((document.getDate("Date")).toInstant(), ZoneId.systemDefault()).toLocalTime();
+                        LocalDate localDate = (document.getDate("Date")).toInstant().atZone(ZoneId.systemDefault()).toLocalDate();  //creates a Date object from the retrieved event's date
+                        LocalTime time = LocalDateTime.ofInstant((document.getDate("Date")).toInstant(), ZoneId.systemDefault()).toLocalTime(); //creates a Time object from the retrieved event's time
                         Log.d("localDate", String.valueOf(localDate));
-                        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd LLLL yyyy");
-//                DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
-                        mEventTime.setText(String.valueOf(time));
-                        mEventDate.setText(localDate.format(dateFormatter));
+                        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd LLLL yyyy");  //creates a date format in the format "date number", "month name", "year" e.g. 01 December 2020
+                        mEventTime.setText(String.valueOf(time));   //sets the time text box as the retrieved event's time
+                        mEventDate.setText(localDate.format(dateFormatter));   //formats the date using the created format and displays is in the text box
 
-                        for (int i = 0; i < groupsList.size(); i++) {        //Iterates through the groupsList for each document
+                        for (int i = 0; i < groupsList.size(); i++) {        //iterates through the groupsList for each document
 //                            Log.d("group", groupsList.get(i).toString());
-                            if (groupsList.get(i).toString().equals("Red")) {           //Checks the colours found in the groupsList
+                            if (groupsList.get(i).toString().equals("Red")) {           //checks the colours found in the groupsList
                                 Log.d("message", "there is a red in here");
-                                mDisplayRed.setVisibility(View.VISIBLE);
+                                mDisplayRed.setVisibility(View.VISIBLE);                //displays the corresponding coloured box if the colour is in the retrieved event's groups
                             }
                             if (groupsList.get(i).toString().equals("Orange")) {
                                 Log.d("message", "there is a orange in here");
@@ -132,8 +131,6 @@ public class viewEventActivity extends AppCompatActivity {
                                 Log.d("message", "there is a violet in here");
                                 mDisplayViolet.setVisibility(View.VISIBLE);
                             }
-
-
                         }
                     }
                 }
@@ -146,13 +143,12 @@ public class viewEventActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_event);
 
-        Date receivedDate = (Date)getIntent().getSerializableExtra("SELECTED_DATE");
-
-        getEvents(receivedDate);
+        Date receivedDate = (Date)getIntent().getSerializableExtra("SELECTED_DATE");    //receives the selected date from MainActivity
+        getEvents(receivedDate);    //displays all of the information for the event on the selected date
         mNextTestButton = findViewById(R.id.nextTestButton);
         mNextTestButton.setVisibility(View.INVISIBLE);
         mBackButton = findViewById(R.id.backButton);
-        mBackButton.setOnClickListener(new View.OnClickListener() {
+        mBackButton.setOnClickListener(new View.OnClickListener() {     //when the user wants to go back to MainActivity
             @Override
             public void onClick(View v) {
                 mBackButton.setBackgroundResource(R.drawable.back_button_pressed);
@@ -163,7 +159,7 @@ public class viewEventActivity extends AppCompatActivity {
                         mBackButton.setBackgroundResource(R.drawable.back_button);
                     }
                 }, 100);
-                startActivity(new Intent(getApplicationContext(),MainActivity.class));
+                startActivity(new Intent(getApplicationContext(),MainActivity.class));  //sends the user back to MainActivity
                 finish();
             }
         });

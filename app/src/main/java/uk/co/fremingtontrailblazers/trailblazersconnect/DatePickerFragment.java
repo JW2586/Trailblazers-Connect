@@ -13,7 +13,7 @@ import androidx.fragment.app.DialogFragment;
 import java.util.Calendar;
 
 public class DatePickerFragment extends DialogFragment {
-    Calendar datePickerCalendar = Calendar.getInstance();
+    Calendar datePickerCalendar = Calendar.getInstance();   //creates a new datePicker and gets the selected date
     int year = datePickerCalendar.get(Calendar.YEAR);
     int month = datePickerCalendar.get(Calendar.MONTH);
     int day = datePickerCalendar.get(Calendar.DAY_OF_MONTH);
@@ -22,6 +22,6 @@ public class DatePickerFragment extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
-        return new DatePickerDialog(getActivity(), (DatePickerDialog.OnDateSetListener) getActivity(), year, month, day);
+        return new DatePickerDialog(getActivity(), (DatePickerDialog.OnDateSetListener) getActivity(), year, month, day);   //returns the selected date to createEventActivity
     }
 }

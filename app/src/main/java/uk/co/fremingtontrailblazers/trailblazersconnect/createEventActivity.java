@@ -49,7 +49,7 @@ import java.util.Map;
 import static android.view.View.VISIBLE;
 
 public class createEventActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
-    private static final String TITLE_KEY = "Title";
+    private static final String TITLE_KEY = "Title";        //sets up constants for use in FireStore
     private static final String DETAILS_KEY = "Details";
     private static final String LOCATION_KEY = "Location";
     private static final String DATE_KEY = "Date";
@@ -59,7 +59,7 @@ public class createEventActivity extends AppCompatActivity implements DatePicker
     private int eventDateDay = 0;
     private int eventHour = 0;
     private int eventMinute = 0;
-    public boolean eventCanBeMade = false;
+    public boolean eventCanBeMade = false;                  //controls whether or not an event can be created
     Button mSaveEventButton;                                //creates variables for each UI element
     EditText mEventDetailsView;
     EditText mEventTitleView;
@@ -83,7 +83,7 @@ public class createEventActivity extends AppCompatActivity implements DatePicker
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_event);
 
-        mCheckBoxRed = findViewById(R.id.checkBoxRed);              //Assigning the UI elements to each variable
+        mCheckBoxRed = findViewById(R.id.checkBoxRed);              //assigning the UI elements to each variable
         mCheckBoxOrange = findViewById(R.id.checkBoxOrange);
         mCheckBoxYellow = findViewById(R.id.checkBoxYellow);
         mCheckBoxGreen = findViewById(R.id.checkBoxGreen);
@@ -100,7 +100,7 @@ public class createEventActivity extends AppCompatActivity implements DatePicker
         mDisplayTime = findViewById(R.id.displayTime);
         mBackButton = findViewById(R.id.saveBackButton);
 
-        mBackButton.setOnClickListener(new View.OnClickListener() {
+        mBackButton.setOnClickListener(new View.OnClickListener() {         //back button to return to MainActivity
             @Override
             public void onClick(View v) {
                 mBackButton.setBackgroundResource(R.drawable.back_button_pressed);
@@ -115,7 +115,7 @@ public class createEventActivity extends AppCompatActivity implements DatePicker
                 finish();
             }
         });
-        mSelectDateButton.setOnClickListener(new View.OnClickListener() {
+        mSelectDateButton.setOnClickListener(new View.OnClickListener() {       //button to select the date for the event being created
             @Override
             public void onClick(View v) {
                 mSelectDateButton.setBackgroundResource(R.drawable.select_date_button_pressed);
@@ -126,13 +126,13 @@ public class createEventActivity extends AppCompatActivity implements DatePicker
                         mSelectDateButton.setBackgroundResource(R.drawable.select_date_button);
                     }
                 }, 100);
-                DialogFragment datePicker = new DatePickerFragment();
+                DialogFragment datePicker = new DatePickerFragment();       //creates and displays a new DatePickerFragment to select the date
                 datePicker.show(getSupportFragmentManager(), "date picker");
 
             }
         });
 
-        mSelectTimeButton.setOnClickListener(new View.OnClickListener() {
+        mSelectTimeButton.setOnClickListener(new View.OnClickListener() {      //button to select the time for the event being created
             @Override
             public void onClick(View v) {
                 mSelectTimeButton.setBackgroundResource(R.drawable.select_time_button_pressed);
@@ -143,11 +143,11 @@ public class createEventActivity extends AppCompatActivity implements DatePicker
                         mSelectTimeButton.setBackgroundResource(R.drawable.select_time_button);
                     }
                 }, 100);
-                DialogFragment timePicker = new TimePickerFragment();
+                DialogFragment timePicker = new TimePickerFragment();       //creates and displays a TimePickerFragment to select the time
                 timePicker.show(getSupportFragmentManager(), "time picker");
             }
         });
-        mSaveEventButton.setOnClickListener(new View.OnClickListener() {            //When the SaveEventButton is pressed, it plays the animation and calls the createEvent function
+        mSaveEventButton.setOnClickListener(new View.OnClickListener() {            //when the SaveEventButton is pressed, it calls the createEvent function
             @Override
             public void onClick(View v) {
                 mSaveEventButton.setBackgroundResource(R.drawable.save_event_button_pressed);
@@ -158,16 +158,13 @@ public class createEventActivity extends AppCompatActivity implements DatePicker
                         mSaveEventButton.setBackgroundResource(R.drawable.save_event_button);
                     }
                 }, 100);
-
-                createEvent();
-
-
+                createEvent();      //createEvent is called to add the event to the database
             }
         });
     }
 
     @Override
-    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {                    //Gets the date from the calendar pop up box
+    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {                    //gets the date from the DatePicker
         this.eventDateYear = year;
         this.eventDateMonth = month;
         this.eventDateDay = dayOfMonth;
@@ -177,60 +174,59 @@ public class createEventActivity extends AppCompatActivity implements DatePicker
         datePickerCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
         String currentDateString = DateFormat.getDateInstance().format(datePickerCalendar.getTime());
         String dateToDisplay = "Selected Date: " + currentDateString;
-        mDisplayDate.setText(dateToDisplay);
+        mDisplayDate.setText(dateToDisplay);    //displays the selected date underneath the button
         Calendar myCalendar = new GregorianCalendar(eventDateYear, eventDateMonth, eventDateDay, eventHour, eventMinute);    //creates a Date data type and passes it the date, month and year of the event
         Date testEventDate = myCalendar.getTime();
-        checkEvents(testEventDate);
+        checkEvents(testEventDate);       //calls checkEvents to check if there is already an event on that date
     }
 
     @Override
-    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {                              //Gets the time from the clock pop up box
+    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {                              //gets the time from the TimePicker
         this.eventHour = hourOfDay;
         this.eventMinute = minute;
-        if (String.valueOf(minute).length() == 1) {
-            String strMinute = "0" + minute;
+        if (String.valueOf(minute).length() == 1) {             //to ensure that 2 digits are displayed for the minute
+            String strMinute = "0" + minute;                    //if the time selected has the minute 0 it ensures that 00 is displayed instead
             String timeToDisplay = "Selected Time: " + hourOfDay + ":" + strMinute;
-            mDisplayTime.setText(timeToDisplay);
+            mDisplayTime.setText(timeToDisplay);    //displays the selected time underneath the button
         } else {
             String timeToDisplay = "Selected Time: " + hourOfDay + ":" + minute;
-            mDisplayTime.setText(timeToDisplay);
+            mDisplayTime.setText(timeToDisplay);    //displays the selected time underneath the button
         }
     }
-//    private CollectionReference mColRef = FirebaseFirestore.getInstance().collection("events");     //sets the cloud firestore collection to be the "events" collection
+
     private void checkEvents(Date testEventDate) {
-        Date dateFrom = new Date();
-        dateFrom = testEventDate;
+        Date dateFrom = testEventDate;      //sets the starting date to be the selected date
         long longFrom = testEventDate.getTime();
-        long longTo = longFrom + 86400000;
+        long longTo = longFrom + 86400000;  //sets the end date to be the selected date + 24 hours
         Date dateTo = new Date();
         dateTo.setTime(longTo);
         Log.d("Date from", String.valueOf(dateFrom));
         Log.d("Date to", String.valueOf(dateTo));
 
-        List<String> eventsList = new ArrayList<>();
-        mColRef.whereGreaterThanOrEqualTo("Date", dateFrom).whereLessThan("Date", dateTo).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+        List<String> eventsList = new ArrayList<>(); //creates a list to store all of the returned events
+        mColRef.whereGreaterThanOrEqualTo("Date", dateFrom).whereLessThan("Date", dateTo).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {     //queries FireStore to only return events that are within 24 hours of the selected date (same day)
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()) {
-                    for (QueryDocumentSnapshot document : task.getResult()) {               //Iterates through each document in cloud firestore
+                    for (QueryDocumentSnapshot document : task.getResult()) {               //iterates through each document in cloud firestore
                         Log.d("document:", document.getId() + " => " + document.get("Groups"));
-                        eventsList.add(document.getId());
-
-
+                        eventsList.add(document.getId());   //if there is an event on the selected day, it is added to eventsList
                     }
                 }else {
                     Log.d("error", "Error getting documents: ", task.getException());
             }
             Log.d("eventsList", String.valueOf(eventsList));
             Log.d("size", String.valueOf(eventsList.size()));
-            if(eventsList.size() == 0){
+
+            if(eventsList.size() == 0){     //if there are no events on this day, then the event can be made
                 Log.d("Status: ", "This event can be made");
                 eventCanBeMade = true;
                 //Toast.makeText(createEventActivity.this, "This event can be made",Toast.LENGTH_SHORT).show();
-            }else{
+
+            }else{                //if there is already an event on this day, then the event cannot be made
                 Log.d("Status: ", "There is already an event on this day");
-                String warningString = "There is already an event on this day, choose another date";
-                mDisplayDate.setText(warningString);
+                String warningString = "There is already an event on this day, choose a different date";
+                mDisplayDate.setText(warningString);    //displays a message underneath the button to choose a different date
                 eventCanBeMade = false;
                 //Toast.makeText(createEventActivity.this, "There is already an event on this day",Toast.LENGTH_SHORT).show();
             }
@@ -245,8 +241,8 @@ public class createEventActivity extends AppCompatActivity implements DatePicker
         Log.i("final date", String.valueOf(finalEventDate));
 
         Log.d("Can event be made? ", String.valueOf(eventCanBeMade));
-        if(eventCanBeMade == true){
-            if(mCheckBoxRed.isChecked()){                   //checks each checkbox to see if it is checked, if it is it adds the colour to groupsList and outputs the colour for debugging purposes
+        if(eventCanBeMade == true){     //only creates the event if the event is allowed to be created
+            if(mCheckBoxRed.isChecked()){                   //checks each checkbox to see if it is checked, if it is it adds the colour to groupsList
                 groupsList.add("Red");
                 Log.i("tag", "Red is added");
                 Log.i("list", groupsList.toString());
@@ -297,9 +293,9 @@ public class createEventActivity extends AppCompatActivity implements DatePicker
                 eventToSave.put(GROUPS_KEY, groupsList);
                 mColRef.add(eventToSave).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {      //saves the data to firestore and checks if the request is successful
                     @Override
-                    public void onSuccess(DocumentReference documentReference) {                    //if the data is successfully saved to firestore, it creates a debug message and takes the user back to the MainActivity
+                    public void onSuccess(DocumentReference documentReference) {
                         Log.d("success", "Document has been saved!");
-                        startActivity(new Intent(getApplicationContext(),MainActivity.class));
+                        startActivity(new Intent(getApplicationContext(),MainActivity.class));      //if the data is successfully saved to firestore, the user is taken back to the MainActivity
                         finish();
                     }
                 }).addOnFailureListener(new OnFailureListener() {                   //if the data is not successfully added to firestore, an error message is added to the Logcat
@@ -311,12 +307,9 @@ public class createEventActivity extends AppCompatActivity implements DatePicker
             }
 
         }else{
-            Toast.makeText(createEventActivity.this, "You must select a Date", Toast.LENGTH_SHORT).show();
+            Toast.makeText(createEventActivity.this, "You must select a Date", Toast.LENGTH_SHORT).show();  //if the event cannot be made, the user must select a different date
             Log.d("Status", "Event is not going to be made");
         }
-
-
-
     }
 
 }

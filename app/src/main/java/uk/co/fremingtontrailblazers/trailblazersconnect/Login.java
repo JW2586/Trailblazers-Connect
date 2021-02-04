@@ -23,20 +23,18 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 
 public class Login extends AppCompatActivity {
-
-    EditText mEmail, mPassword;
+    EditText mEmail, mPassword;         //creates variables for each UI element
     Button mLoginBtn;
     TextView mCreateAccountText;
     TextView mForgotPassword;
     FirebaseAuth fAuth;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        mEmail = findViewById(R.id.TextEmailAddress);
+        mEmail = findViewById(R.id.TextEmailAddress);   //assigns the UI elements to each variable
         mPassword = findViewById(R.id.TextPassword);
         fAuth = FirebaseAuth.getInstance();
         mLoginBtn = findViewById(R.id.loginButton);
@@ -68,12 +66,12 @@ public class Login extends AppCompatActivity {
                     return;
                 }
 
-                fAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                fAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {  //starts the FirebaseAuth sign in process
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if(task.isSuccessful()){
                             Toast.makeText(Login.this, "Login successful", Toast.LENGTH_SHORT).show();
-                            startActivity(new Intent(getApplicationContext(),MainActivity.class));
+                            startActivity(new Intent(getApplicationContext(),MainActivity.class));      //sends user to MainActivity if they have successfully signed in
                             finish();
                         }else{
                             Toast.makeText(Login.this, "An error has occurred, " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
@@ -83,7 +81,7 @@ public class Login extends AppCompatActivity {
             }
         });
 
-        mCreateAccountText.setOnClickListener(new View.OnClickListener() {
+        mCreateAccountText.setOnClickListener(new View.OnClickListener() {      //user presses this if they do not yet have an account
             @Override
             public void onClick(View v) {
                 mCreateAccountText.setTextColor(getResources().getColor(R.color.TbDarkOrange));
@@ -94,15 +92,15 @@ public class Login extends AppCompatActivity {
                         mCreateAccountText.setTextColor(getResources().getColor(R.color.TrailBlazersOrange));
                     }
                 }, 100);
-                startActivity(new Intent(getApplicationContext(),Register.class));
+                startActivity(new Intent(getApplicationContext(),Register.class));    //sends the user to Register activity if they have not yet created an account
             }
         });
 
-        mForgotPassword.setOnClickListener(new View.OnClickListener() {
+        mForgotPassword.setOnClickListener(new View.OnClickListener() {     //user presses this if they have forgotten their password
             @Override
             public void onClick(View v) {
                 EditText resetMail = new EditText(v.getContext());
-                AlertDialog.Builder passwordResetDialog = new AlertDialog.Builder(v.getContext());
+                AlertDialog.Builder passwordResetDialog = new AlertDialog.Builder(v.getContext());      //creates a dialog box allowing the user to reset their password
                 passwordResetDialog.setTitle("Reset Password?");
                 passwordResetDialog.setMessage("Enter your Email Address to receive a link to reset your password:");
                 passwordResetDialog.setView(resetMail);
@@ -111,7 +109,7 @@ public class Login extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         String email = resetMail.getText().toString();
-                        fAuth.sendPasswordResetEmail(email).addOnSuccessListener(new OnSuccessListener<Void>() {
+                        fAuth.sendPasswordResetEmail(email).addOnSuccessListener(new OnSuccessListener<Void>() {    //starts the FirebaseAuth procces to reset the user's password
                             @Override
                             public void onSuccess(Void aVoid) {
                                 Toast.makeText(Login.this, "A Password reset link has been sent to your email", Toast.LENGTH_SHORT).show();

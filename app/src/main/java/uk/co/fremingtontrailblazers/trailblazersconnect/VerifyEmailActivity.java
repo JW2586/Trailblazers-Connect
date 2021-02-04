@@ -25,34 +25,32 @@ import java.util.Map;
 import java.util.Objects;
 
 public class VerifyEmailActivity extends AppCompatActivity {
-
-    Button mResendButton;
+    Button mResendButton;   //creates variables for each UI element
     Button mEnterButton;
     FirebaseAuth fAuth;
     FirebaseUser user;
     String userID;
-    private CollectionReference mColRef = FirebaseFirestore.getInstance().collection("users");     //sets the cloud firestore collection to be the "events" collection
-
+    private CollectionReference mColRef = FirebaseFirestore.getInstance().collection("users");     //sets the cloud firestore collection to be the "users" collection
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_verify_email);
 
-        mResendButton = findViewById(R.id.resendButton);
+        mResendButton = findViewById(R.id.resendButton);    //assigning the UI elements to each variable
         mEnterButton = findViewById(R.id.enterButton);
-        fAuth = FirebaseAuth.getInstance();
-        userID = fAuth.getCurrentUser().getUid();
+
+        fAuth = FirebaseAuth.getInstance(); //gets the current FirebaseAuth instance
+        userID = fAuth.getCurrentUser().getUid();   //gets the current user and their userID
         user = fAuth.getCurrentUser();
-        String fullName = getIntent().getStringExtra("User Name");
+        String fullName = getIntent().getStringExtra("User Name");  //receives the user's full name and email address from the Register activity
         String email = getIntent().getStringExtra("Email");
         Log.d("CURRENT USER", String.valueOf(userID));
 
-        mResendButton.setOnClickListener(new View.OnClickListener() {
+        mResendButton.setOnClickListener(new View.OnClickListener() {     //if the user has not received a verification email, they click this button
             @Override
             public void onClick(final View v) {
                 mResendButton.setBackgroundResource(R.drawable.resend_email_button_pressed);
-
                 Handler handler = new Handler();
                 handler.postDelayed(new Runnable() {
                     @Override
@@ -60,7 +58,7 @@ public class VerifyEmailActivity extends AppCompatActivity {
                         mResendButton.setBackgroundResource(R.drawable.resend_email_button);
                     }
                 }, 100);
-                user.sendEmailVerification().addOnSuccessListener(new OnSuccessListener<Void>() {
+                user.sendEmailVerification().addOnSuccessListener(new OnSuccessListener<Void>() {   //re-sends the verification email to the user
                     @Override
                     public void onSuccess(Void aVoid) {
                         Toast.makeText(VerifyEmailActivity.this, "Verification Email Has been Sent.", Toast.LENGTH_SHORT).show();
@@ -74,11 +72,10 @@ public class VerifyEmailActivity extends AppCompatActivity {
             }
         });
 
-        mEnterButton.setOnClickListener(new View.OnClickListener() {
+        mEnterButton.setOnClickListener(new View.OnClickListener() {    //user clicks this when they have verified their email address
             @Override
             public void onClick(View v) {
                 mEnterButton.setBackgroundResource(R.drawable.enter_app_button_pressed);
-
                 Handler handler = new Handler();
                 handler.postDelayed(new Runnable() {
                     @Override
@@ -86,21 +83,22 @@ public class VerifyEmailActivity extends AppCompatActivity {
                         mEnterButton.setBackgroundResource(R.drawable.enter_app_button);
                     }
                 }, 100);
-                user = fAuth.getCurrentUser();
-                user.reload();
-                user = fAuth.getCurrentUser();
+                user = fAuth.getCurrentUser();  //gets the current user
+                user.reload();      //reloads the user
+                user = fAuth.getCurrentUser();  //gets the current user again to ensure that it is correct
+                //***the program waits for 2 seconds to ensure that the user has been successfully reloaded***
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
                         Log.d("TAG", String.valueOf(user.isEmailVerified()));
-                        if(user.isEmailVerified()){
+                        if(user.isEmailVerified()){     //if the user's email address has been verified in Firebase
                             Toast.makeText(VerifyEmailActivity.this, "Email successfully verified", Toast.LENGTH_SHORT).show();
-                            userID = Objects.requireNonNull(fAuth.getCurrentUser()).getUid();
-                            Map<String, Object> userData = new HashMap<>();
-                            userData.put("Full Name", fullName);
+                            userID = Objects.requireNonNull(fAuth.getCurrentUser()).getUid();   //gets the current user's ID for the title of the created document
+                            Map<String, Object> userData = new HashMap<>();     //creates a new HashMap to store the userData for FireStore
+                            userData.put("Full Name", fullName);    //adds the user's name and email address to userData
                             userData.put("Email", email);
-                            userData.put("Role", "Runner");
-                            mColRef.document(userID).set(userData).addOnSuccessListener(new OnSuccessListener<Void>() {
+                            userData.put("Role", "Runner"); //sets the user's role as a "Runner" by default
+                            mColRef.document(userID).set(userData).addOnSuccessListener(new OnSuccessListener<Void>() { //adds the userData to a document in FireStore with the title of the user's ID
                                 @Override
                                 public void onSuccess(Void aVoid) {
                                     Log.d("success", "Document has been saved!");
@@ -111,14 +109,13 @@ public class VerifyEmailActivity extends AppCompatActivity {
                                     Log.w("ERROR", "Document was not saved!");
                                 }
                             });
-                            startActivity(new Intent(getApplicationContext(),MainActivity.class));
+                            startActivity(new Intent(getApplicationContext(),MainActivity.class));  //sends the user to MainActivity
                         }else{
                             Toast.makeText(VerifyEmailActivity.this, "Your Email has not been verified", Toast.LENGTH_SHORT).show();
                             Log.d("CURRENT USER", String.valueOf(userID));
                         }
                     }
                 }, 2000);
-
             }
         });
     }
