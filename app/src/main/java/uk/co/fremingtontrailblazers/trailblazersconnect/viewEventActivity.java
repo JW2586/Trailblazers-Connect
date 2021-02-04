@@ -134,8 +134,6 @@ public class viewEventActivity extends AppCompatActivity {
 
         Date receivedDate = (Date)getIntent().getSerializableExtra("SELECTED_DATE");    //receives the selected date from MainActivity
         getEvents(receivedDate);    //displays all of the information for the event on the selected date
-        mNextTestButton = findViewById(R.id.nextTestButton);
-        mNextTestButton.setVisibility(View.INVISIBLE);
         mBackButton = findViewById(R.id.backButton);
         mBackButton.setOnClickListener(new View.OnClickListener() {     //when the user wants to go back to MainActivity
             @Override
