@@ -7,19 +7,6 @@
     tools:context=".viewEventActivity">
 
     <TextView
-        android:id="@+id/displayEventGroups"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginTop="32dp"
-        android:text="displayEventGroups"
-        android:textSize="24sp"
-        android:visibility="gone"
-        app:layout_constraintStart_toEndOf="@+id/textView10"
-        app:layout_constraintTop_toBottomOf="@+id/displayEventDetails" />
-
-    <TextView
         android:id="@+id/displayEventTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
