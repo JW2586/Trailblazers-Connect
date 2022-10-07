@@ -1,4 +1,4 @@
-# 🏃🏻‍♂️ Trailblazers-Connect
+# 🏃🏻‍♂️ Trailblazers Connect
 
 ![App screenshots](https://github.com/JW2586/Trailblazers-Connect/blob/master/large%20layout.png)
 
