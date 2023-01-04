@@ -4,7 +4,7 @@
 
 Trailblazers Connect is an Android Application for use by my local running club.
 
-It synchronises an events calendar between all the users so that members can see when there next training session is.    
+It synchronises an events calendar between all the users so that members can see when their next training session is.    
 
 ## User roles
 ### Runner
