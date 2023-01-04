@@ -2,7 +2,7 @@
 
 ![App screenshots](https://github.com/JW2586/Trailblazers-Connect/blob/master/large%20layout.png)
 
-Trailblazers Connect is an Android Application for use by the Fremington Trailblazers running club.
+Trailblazers Connect is an Android Application for use by my local running club.
 
 It synchronises an events calendar between all the users so that members can see when there next training session is.    
 
