@@ -48,7 +48,7 @@ import java.util.Map;
 
 import static android.view.View.VISIBLE;
 
-public class createEventActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
+public class    createEventActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
     private static final String TITLE_KEY = "Title";        //sets up constants for use in FireStore
     private static final String DETAILS_KEY = "Details";
     private static final String LOCATION_KEY = "Location";
